@@ -30,8 +30,8 @@ async function generateJWT(user, timeInSecond) {
     nbf: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + timeInSecond, // Token valid for 30 days
     data: {
-      mobile_number: user.mobile,
-      user_type: user.user_type,
+      mobile_number: user.mobile_number,
+      user_type: "Customer",
       fcm_token: "", // You can pass the FCM token here if needed
     },
   };
@@ -68,7 +68,7 @@ async function handleVerifyOtp(req, res) {
 
     // OTP is valid, proceed with further steps
 
-    const loginExistOfUser = await Login.findOne({ mobile_number: mobile });
+    const loginExistOfUser = await Login.findOne({ mobile_number: mobile,page_url: "Customer Login" });
     let newLogin;
     if (loginExistOfUser) {
       loginExistOfUser.login_time = moment().utc().toDate();
@@ -498,7 +498,7 @@ async function saveUserAppDeviceInfo(req, res) {
 async function getServiceTypeFromServiceProvide(req, res) {
   try {
     const mobileNumber = req.user.mobile_number;
-    const existingLogin = await Login.findOne({ mobile_number: mobileNumber });
+    const existingLogin = await Login.findOne({ mobile_number: mobileNumber,page_url: "Customer Login", });
     if (!existingLogin) {
       return res
         .status(404)
@@ -593,7 +593,7 @@ async function generateJWTTokenWithRefreshToken(req, res) {
     if (user.success) {
       const userData = user.data;
       const normalizedUser = {
-        mobile: userData.mobile_number, // Normalize mobile to mobile_number
+        mobile_number: userData.mobile_number, // Normalize mobile to mobile_number
         user_type: userData.user_type,
       };
       const newJWT = await generateJWT(normalizedUser, customerJWTExp * 60); // 5 minutes expiration time (in seconds)

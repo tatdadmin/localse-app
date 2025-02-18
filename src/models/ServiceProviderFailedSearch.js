@@ -9,5 +9,6 @@ const ServiceProviderFailedSearchSchema = new mongoose.Schema({
 
 module.exports = mongoose.model(
   "ServiceProviderFailedSearch",
-  ServiceProviderFailedSearchSchema
+  ServiceProviderFailedSearchSchema,
+  "service_provider_failed_search"
 );

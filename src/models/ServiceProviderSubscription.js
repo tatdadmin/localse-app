@@ -37,6 +37,6 @@ const serviceProviderSubscriptionSchema = new mongoose.Schema(
 );
 
 // Create and export the model
-const ServiceProviderSubscription = mongoose.model('ServiceProviderSubscription', serviceProviderSubscriptionSchema);
+const ServiceProviderSubscription = mongoose.model('ServiceProviderSubscription', serviceProviderSubscriptionSchema,"service_provider_subscription");
 
 module.exports = ServiceProviderSubscription;

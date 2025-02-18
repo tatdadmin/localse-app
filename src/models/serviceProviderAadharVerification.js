@@ -40,4 +40,4 @@ const AadharVerificationSchema = new mongoose.Schema({
     ad_message_code: { type: String, default: '' }
 });
 
-module.exports = mongoose.model('ServiceProviderAadharVerification', AadharVerificationSchema);
+module.exports = mongoose.model('ServiceProviderAadharVerification', AadharVerificationSchema,"service_provider_aadhar_verification");

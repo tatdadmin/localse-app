@@ -37,6 +37,6 @@ const serviceProviderSubscriptionValidationSchema = new mongoose.Schema(
 );
 
 // Create and export the model
-const ServiceProviderSubscriptionValidation = mongoose.model('ServiceProviderSubscriptionValidation', serviceProviderSubscriptionValidationSchema);
+const ServiceProviderSubscriptionValidation = mongoose.model('ServiceProviderSubscriptionValidation', serviceProviderSubscriptionValidationSchema,"service_provider_subscription_validation");
 
 module.exports = ServiceProviderSubscriptionValidation;

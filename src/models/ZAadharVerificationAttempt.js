@@ -7,4 +7,4 @@ const ZAadhaarVerificationAttemptSchema = new mongoose.Schema({
   end_date: { type: String, required: true },   // Stored as a formatted string
 });
 
-module.exports = mongoose.model("ZAadhaarVerificationAttempt", ZAadhaarVerificationAttemptSchema);
+module.exports = mongoose.model("ZAadhaarVerificationAttempt", ZAadhaarVerificationAttemptSchema,"z_aadhar_verification_attempts");

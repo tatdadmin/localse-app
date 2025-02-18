@@ -42,7 +42,8 @@ const customerServicesClicksSchema = new mongoose.Schema(
 // Create the model for customer_services_clicks
 const CustomerServicesClicks = mongoose.model(
   'CustomerServicesClicks',
-  customerServicesClicksSchema
+  customerServicesClicksSchema,
+  "customer_services_clicks"
 );
 
 module.exports = CustomerServicesClicks;

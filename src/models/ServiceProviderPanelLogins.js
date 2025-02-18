@@ -12,4 +12,4 @@ const serviceProviderPanelLoginSchema = new mongoose.Schema(
   { timestamps: false } // No need for automatic timestamps
 );
 
-module.exports = mongoose.model('ServiceProviderPanelLogin', serviceProviderPanelLoginSchema);
+module.exports = mongoose.model('ServiceProviderPanelLogin', serviceProviderPanelLoginSchema,"service_provider_panel_logins");
