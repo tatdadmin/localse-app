@@ -29,4 +29,4 @@ const agentLeadsSchema = new mongoose.Schema(
   { timestamps: true }  // Automatically adds 'createdAt' and 'updatedAt' fields
 );
 
-module.exports = mongoose.model("AgentLeads", agentLeadsSchema);
+module.exports = mongoose.model("AgentLeads", agentLeadsSchema,"agent_leads");

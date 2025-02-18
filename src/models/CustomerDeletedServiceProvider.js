@@ -30,7 +30,8 @@ const customerDeletedServiceProviderSchema = new mongoose.Schema(
 // Create the model for customer_deleted_service_provider
 const CustomerDeletedServiceProvider = mongoose.model(
   'CustomerDeletedServiceProvider',
-  customerDeletedServiceProviderSchema
+  customerDeletedServiceProviderSchema,
+  "customer_deleted_service_provider"
 );
 
 module.exports = CustomerDeletedServiceProvider;

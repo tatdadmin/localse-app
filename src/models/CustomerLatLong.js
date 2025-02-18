@@ -35,6 +35,6 @@ const CustomerLatLongSchema = new Schema({
 });
 
 // Model for Customer LatLong
-const CustomerLatLong = mongoose.model('CustomerLatLong', CustomerLatLongSchema);
+const CustomerLatLong = mongoose.model('CustomerLatLong', CustomerLatLongSchema,"customer_lat_long");
 
 module.exports = CustomerLatLong;

@@ -41,6 +41,6 @@ const customerRatingsSchema = new Schema({
 });
 
 // Create a model from the schema
-const CustomerRating = mongoose.model('CustomerRating', customerRatingsSchema);
+const CustomerRating = mongoose.model('CustomerRating', customerRatingsSchema,"customer_ratings");
 
 module.exports = CustomerRating;
