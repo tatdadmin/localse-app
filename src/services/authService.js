@@ -38,7 +38,9 @@ const { sendSms } = require("../utils/sendSms");
 // Send OTP function
 exports.sendOtp = async ({ mobile, IpAddress, deviceOS, app_version }) => {
   try {
-    const existingLogin = await AppLoginAttempt.findOne({ mobile });
+    const existingLogin = await AppLoginAttempt.findOne({ mobile
+      , user_type:"Service Provider"
+     });
 
     const otp = generateOTP();
     const expiresAt = new Date();
@@ -100,7 +102,9 @@ exports.sendOtp = async ({ mobile, IpAddress, deviceOS, app_version }) => {
 // Function to verify OTP
 exports.verifyOtp = async ({ mobile, otp }) => {
   try {
-    const loginAttempt = await AppLoginAttempt.findOne({ mobile });
+    const loginAttempt = await AppLoginAttempt.findOne({ mobile
+      , user_type:"Service Provider"
+     });
     let fetchDeviceOs = loginAttempt.deviceOS;
     let fetchDeviceVersion = loginAttempt.app_version;
     if (!loginAttempt) {
