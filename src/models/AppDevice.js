@@ -10,7 +10,7 @@ const appDeviceSchema = new mongoose.Schema({
   systemVersion: { type: String, required: true },
   appVersion: { type: String, required: true },
   buildNumber: { type: String, required: true },
-  isTablet: { type: String, required: true },
+  isTablet: { type: String, default:'' },
   user_app: { type: String, default: '' },
   user_type: { type: String, default: '' },
   action: {type:String, default:''},
