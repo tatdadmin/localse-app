@@ -20,6 +20,7 @@ const AppDevice = require("../models/AppDevice");
 const RefreshToken = require("../models/AppRefreshToken");
 const Login = require("../models/Login");
 const AppLoginAttempt = require("../models/AppLoginAttempt");
+const CustomerLatLongHit = require("../models/CustomerLatLongHit");
 require("dotenv").config();
 
 async function generateJWT(user, timeInSecond) {
@@ -1061,6 +1062,41 @@ async function getAppVersionInfo(req,res){
     .json({ status_code: 500, message: "Internal server error" });
   }
 }
+async function customerLatLongHit(req,res){
+  try {
+    const customer_number = req.user.mobile_number;
+    const {latitude, longitude, place_id, pickup_address, api_type, api_hit_url} = req.body;
+
+    if(!latitude || !longitude || !place_id || !pickup_address || !api_hit_url || !api_type){
+      return res.status(400).json({
+        status_code: 400,
+        message: "plz enter the request body fields"
+      })
+    }
+
+    const newCustomerData= new CustomerLatLongHit({
+      mobile_number:customer_number,
+      latitude,
+      longitude,
+      place_id,
+      pickup_address,
+      api_type,
+      api_hit_url
+    });
+
+    await newCustomerData.save();
+    return res.status(200).json({
+      status_code:200,
+      message: "Data inserted Successfully",
+    })
+    
+  } catch (error) {
+    console.log("Error in Customer LatLong hit api",error)
+    return res
+    .status(500)
+    .json({ status_code: 500, message: "Internal server error" });
+  }
+}
 module.exports = {
   handleLoginAttempt,
   handleVerifyOtp,
@@ -1076,5 +1112,6 @@ module.exports = {
   showRatingModel,
   serviceProviderDelete,
   HandleStoreClick,
-  getAppVersionInfo
+  getAppVersionInfo,
+  customerLatLongHit
 };

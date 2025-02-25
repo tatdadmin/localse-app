@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const authenticateJWT = require('../middlewares/customerAuth.js');
-const { handleVerifyOtp, saveUserAppDeviceInfo, handleLoginAttempt, saveFCMToken, getServiceTypeFromServiceProvide, handleCustomerCurrentAddress, generateJWTTokenWithRefreshToken, filterSearchServiceTypeApi, getServiceProviderListBasedOnServicesType, insertRatingToServiceProvider, showRatingModel, serviceProviderDelete, HandleStoreClick, getAppVersionInfo, getCustomerlatlong } = require('../controllers/customerAppContoller.js');
+const { handleVerifyOtp, saveUserAppDeviceInfo, handleLoginAttempt, saveFCMToken, getServiceTypeFromServiceProvide, handleCustomerCurrentAddress, generateJWTTokenWithRefreshToken, filterSearchServiceTypeApi, getServiceProviderListBasedOnServicesType, insertRatingToServiceProvider, showRatingModel, serviceProviderDelete, HandleStoreClick, getAppVersionInfo, getCustomerlatlong, customerLatLongHit } = require('../controllers/customerAppContoller.js');
 
 // Define the POST route for /api/mobileOTP using the sendOTP controller function
 router.post('/login/login-otp', handleLoginAttempt);
@@ -26,4 +26,5 @@ router.get('/service_provider_listing/rating_modal_content_api',authenticateJWT,
 router.post('/service_provider_listing/service-provider-deleted',authenticateJWT,serviceProviderDelete)
 router.post('/service_provider_listing/store_click_api',authenticateJWT,HandleStoreClick)
 router.post('/authentication/get-app-version-info',authenticateJWT,getAppVersionInfo)
+router.post('/home/customer-lat-long-hit',authenticateJWT,customerLatLongHit)
 module.exports = router;
