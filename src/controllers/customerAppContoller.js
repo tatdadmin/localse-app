@@ -1067,12 +1067,12 @@ async function customerLatLongHit(req,res){
     const customer_number = req.user.mobile_number;
     const {latitude, longitude, place_id, pickup_address, api_type, api_hit_url} = req.body;
 
-    if(!latitude || !longitude || !place_id || !pickup_address || !api_hit_url || !api_type){
-      return res.status(400).json({
-        status_code: 400,
-        message: "plz enter the request body fields"
-      })
-    }
+    // if(!latitude || !longitude || !place_id || !pickup_address || !api_hit_url || !api_type){
+    //   return res.status(400).json({
+    //     status_code: 400,
+    //     message: "plz enter the request body fields"
+    //   })
+    // }
 
     const newCustomerData= new CustomerLatLongHit({
       mobile_number:customer_number,
