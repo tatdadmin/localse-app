@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const CustomerLatLongHitSchema = new Schema({
   add_date: {
     type: Date,
-    default: new Date
+    default: Date.now
     // () => moment().tz("Asia/Kolkata").toDate(), // Stores IST time
   },
   mobile_number: {
@@ -48,7 +48,7 @@ const CustomerLatLongHitSchema = new Schema({
 const CustomerLatLongHit = mongoose.model(
   "CustomerLatLongHit",
   CustomerLatLongHitSchema,
-  "customer_lat_long_search_api_hit2" // Collection name in MongoDB
+  "customer_lat_long_search_api_hit" // Collection name in MongoDB
 );
 
 module.exports = CustomerLatLongHit;
