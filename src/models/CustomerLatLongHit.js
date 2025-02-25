@@ -15,32 +15,32 @@ const CustomerLatLongHitSchema = new Schema({
   },
   latitude: {
     type: String,
-    required: true,
+    // required: true,
   },
   longitude: {
     type: String,
-    required: true,
+    // required: true,
   },
   place_id: {
     type: String,
-    required: true,
+    // required: true,
   },
   pincode: {
     type: String,
-    required: false,
+    // required: false,
     maxlength: 10, // Assuming max 10 digits for pincode
   },
   pickup_address: {
     type: String,
-    required: true,
+    // required: true,
   },
   api_type: {
     type: String,
-    required: false, // Optional field
+    // required: false, // Optional field
   },
   api_hit_url: {
     type: String,
-    required: false, // Optional field
+    // required: false, // Optional field
   },
 });
 
