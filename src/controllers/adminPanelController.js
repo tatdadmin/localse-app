@@ -147,7 +147,7 @@ try {
             message:"Notifications have been sent Successfully To ALL"
         })
     }else if(to_all =="0" && service_provider_mobile_number){
-        const serviceProviderData= await serviceProviderModel.find({
+        const serviceProviderData= await serviceProviderModel.findOne({
             service_provider_mobile_number:service_provider_mobile_number
         })
 
