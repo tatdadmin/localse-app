@@ -1080,6 +1080,7 @@ async function customerLatLongHit(req,res){
 
     const newCustomerData= new CustomerLatLongHit({
       mobile_number:customer_number,
+      add_date: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
       latitude,
       longitude,
       place_id,
