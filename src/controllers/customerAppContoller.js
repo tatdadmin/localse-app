@@ -45,8 +45,8 @@ async function handleVerifyOtp(req, res) {
   const { mobile, otp, deviceOS, current_app_version } = req.body;
   const user_type = "Customer";
   const db_user= "Customer";
-  const expires_at = moment().utc().toDate();
-  const currentTime = moment().utc().startOf("second"); // Strip milliseconds from current time
+  const expires_at =  new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)// moment().utc().toDate();
+  const currentTime =  new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)//moment().utc().startOf("second"); // Strip milliseconds from current time
 
   if (!mobile || !otp) {
     return res
@@ -60,7 +60,7 @@ async function handleVerifyOtp(req, res) {
       otp,
       user_type,
       db_user,
-      expires_at: { $gt: currentTime.toDate() },
+      expires_at: { $gt: currentTime },
     }).sort({ created_at: -1 });
 
     if (!loginAttempt) {
@@ -72,7 +72,7 @@ async function handleVerifyOtp(req, res) {
     const loginExistOfUser = await Login.findOne({ mobile_number: mobile,page_url: "Customer Login" });
     let newLogin;
     if (loginExistOfUser) {
-      loginExistOfUser.login_time = moment().utc().toDate();
+      loginExistOfUser.login_time = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
       await loginExistOfUser.save();
       newLogin = loginExistOfUser;
     } else {
@@ -80,7 +80,7 @@ async function handleVerifyOtp(req, res) {
         mobile_number: mobile,
         page_url: "Customer Login",
         // user_type: user_type,
-        login_time: moment().utc().toDate(),
+        login_time: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
       };
 
       newLogin = new Login(loginData);
@@ -95,9 +95,9 @@ async function handleVerifyOtp(req, res) {
     const customerRefExp = customerRefreshTokenExp * 24 * 60 * 60;
 
     const refresh_token = await generateJWT(newLogin, customerRefExp);
-    const refresh_token_expiry = moment()
-      .add(customerRefreshTokenExp, "days")
-      .toDate();
+    let expiresAt2 = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000); // IST offset
+    expiresAt2.setDate(expiresAt2.getDate() + 30); // Add 30 days
+    const refresh_token_expiry = expiresAt2;
 
     // Check if the mobile number already exists in app_refresh_tokens
     let appRefreshToken = await RefreshToken.findOne({
@@ -197,8 +197,10 @@ async function handleLoginAttempt(req, res) {
   }
 
   const otp = generateOTP(); // Generate OTP
-  const expires_at = moment().utc().add(10, "minutes").toDate(); //.format('YYYY-MM-DD HH:mm:ss'); // OTP valid for 10 minutes
-  const current_time = moment().utc().toDate(); //.format('YYYY-MM-DD HH:mm:ss');
+    const expiresAt = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
+    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
+  const expires_at =  expiresAt// moment().utc().add(10, "minutes").toDate(); //.format('YYYY-MM-DD HH:mm:ss'); // OTP valid for 10 minutes
+  const current_time =  new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000); //.format('YYYY-MM-DD HH:mm:ss');
   const user_type = "Customer";
   const db_user = "Customer"; // This can be dynamic if needed
 
@@ -224,6 +226,7 @@ async function handleLoginAttempt(req, res) {
     } else {
       // No valid OTP exists, insert a new record
       const newLoginAttempt = new AppLoginAttempt({
+        created_at: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
         mobile,
         otp,
         expires_at,
