@@ -7,11 +7,12 @@ const { default: axios } = require("axios");
 const Services = require("../models/Services");
 const serviceProviderModel = require("../models/serviceProviderModel");
 const serviceProviderAadharVerification = require("../models/serviceProviderAadharVerification");
-const service_provider_lat_long = require("../models/service_provider_lat_long");
+// const service_provider_lat_long = require("../models/service_provider_lat_long");
 const ServiceProviderNotifications = require("../models/ServiceProviderNotifications");
 const AgentLeads = require("../models/AgentLeads");
 const Login = require("../models/Login");
 const AppDetails = require("../models/AppDetails");
+const service_provider_lat_long = require("../models/service_provider_lat_long");
 
 const verifyToken = (token) => {
   try {
@@ -103,12 +104,13 @@ exports.getServiceProviderServices = async (req, res) => {
 
     // Extract only the service_type from the filtered services
     const serviceNames = services.map((service) => service.service_type);
+    const sortedServiceNames = serviceNames.sort((a, b) => a.localeCompare(b));
 
     return res.status(200).json({
       success: true,
       status_code: 200,
       message: "Active services retrieved successfully",
-      data: serviceNames,
+      data: sortedServiceNames,
     });
   } catch (error) {
     return res.status(500).json({
@@ -151,35 +153,42 @@ exports.searchServiceProviderService = async (req, res) => {
     }
 
     // Fetch services where service_active_status = 1 and filter based on user input (case insensitive)
+    // const services = await Services.find({
+    //   service_active_status: "1",
+    //   service_type: { $regex: new RegExp(keyword, "i") }, // Case-insensitive search
+    // }).sort({ service_type: 1 }); // Sorting in ascending order
+
     const services = await Services.find({
       service_active_status: "1",
-      service_type: { $regex: new RegExp(keyword, "i") }, // Case-insensitive search
-    }).sort({ service_type: 1 }); // Sorting in ascending order
-
+      service_type_synonym: { $regex: new RegExp(keyword, "i") }, // Case-insensitive search in synonyms
+    }).sort({ service_type: 1 }); // Sorting results alphabetically
+    
+    // Extract only `service_type` from the matched services
+    const serviceNames = services.map((service) => service.service_type);
     if (services.length > 0) {
       // If services are found, return the results
       return res.status(200).json({
         success: true,
         status_code: 200,
         message: "Service Type retrieved successfully",
-        data: services.map((service) => service.service_type),
+        data: serviceNames
+        //  services.map((service) => service.service_type),
       });
     } else if (keyword.length >= 3) {
       // If no services are found and the search keyword is at least 3 characters long, save it in failed search
 
-      // Fetch service_provider_lat_long_address based on mobile_number
-      const serviceProviderLatLong = await ServiceProviderLatLong.findOne({
-        mobile_number: decodedToken.mobile,
-      });
+      const latestLocation = await service_provider_lat_long
+      .findOne({ mobile_number: decodedToken.mobile })
+      .sort({ add_date: -1 });
 
       const service_provider_lat_long_address =
-        serviceProviderLatLong?.address || ""; // Use address if found, otherwise empty string
+        latestLocation?.address || ""; // Use address if found, otherwise empty string
 
       const failedSearch = new ServiceProviderFailedSearch({
         add_date: moment().format("YYYY:MM:DD:HH:mm:ss"), // Correct date format
         service_provider_mobile_number: decodedToken.mobile,
         service_provider_lat_long_address: service_provider_lat_long_address,
-        keyword: keyword,
+        search_keyword: keyword,
       });
 
       await failedSearch.save();
