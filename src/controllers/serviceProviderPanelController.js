@@ -520,7 +520,12 @@ async function buySubscriptionCheck(req,res){
         }).sort({addDate: -1 }).select("end_date");
 
         if(!serviceProviderSubscriptionData){
-            return res.status(400).json({status_code:400, message:"Service Provider Not found with mobile Number"});
+            return res.status(200).json({
+                status_code:200,
+                message: "Please Subscription Buy",
+                redirect: "buy-subscription"
+             }) 
+            // return res.status(400).json({status_code:400, message:"Service Provider Not found with mobile Number"});
         }
 
         const endDate = new Date(serviceProviderSubscriptionData.end_date);  // Your end_date from the database
