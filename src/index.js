@@ -10,6 +10,7 @@ const serviceProviderServiceRoutes = require("./routes/seriveProviderServiceRout
 const aadharOpt = require("./routes/aadhaarRoutes")
 const customerAppRoutes = require("./routes/customerAppRoute"); // Import routes from mobileOTP.js
 const serviceProviderPanelRoute = require("./routes/serviceProviderPanelRoute");
+const adminPanelRoute= require("./routes/adminPanelRoutes");
 
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //for Customer api routes
 app.use('/api/customer', customerAppRoutes);
+app.use('/api/admin_panel',adminPanelRoute)
 
 //for service provider routes
 app.use("/api/service_provider",authRoutes);
