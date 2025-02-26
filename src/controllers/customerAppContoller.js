@@ -534,7 +534,10 @@ async function getServiceTypeFromServiceProvide(req, res) {
         const existingCustomerLongitude = parseFloat(
           existingCustomerLatLong.longitude
         );
-        const serviceProviders = await serviceProviderModel.find({});
+        const serviceProviders = await serviceProviderModel.find({
+          active_status: "1",
+          panel_login: "1"
+        });
 
         const nearbyServiceProviders = serviceProviders
           .filter((provider) => {
@@ -672,7 +675,10 @@ async function filterSearchServiceTypeApi(req, res) {
       const existingCustomerLongitude = parseFloat(
         existingCustomerLatLong.longitude
       );
-      const serviceProviders = await serviceProviderModel.find({});
+      const serviceProviders = await serviceProviderModel.find({
+          active_status: "1",
+          panel_login: "1"
+      });
       const nearbyServiceProviders = serviceProviders
         .filter((provider) => {
           const [providerLatitude, providerLongitude] = provider.current_latlong
@@ -718,7 +724,7 @@ async function getServiceProviderListBasedOnServicesType(req,res){
     const serviceType= req.query.service_type;
     if(!serviceType){
       return res.status(404).json({
-        message: "service_provider not given in param",
+        message: "service_type not given in param",
         status:404
       })
     }
@@ -738,7 +744,10 @@ async function getServiceProviderListBasedOnServicesType(req,res){
       existingCustomerLatLong.longitude == ""
     ){
       const serviceProviders = await serviceProviderModel.find({
-        service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        // service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        service_type: { $regex: new RegExp(serviceType, 'i') },
+        active_status:"1",
+        panel_login: "1"
       });
 
       return res.status(200).json(
@@ -751,10 +760,11 @@ async function getServiceProviderListBasedOnServicesType(req,res){
     }
     else{
       const serviceProviders = await serviceProviderModel.find({
-        service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        // service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        service_type: { $regex: new RegExp(serviceType, 'i') },
+        active_status:"1",
+        panel_login: "1"
       });
-
-
       const existingCustomerLattitude = parseFloat(
         existingCustomerLatLong.latitude
       );
