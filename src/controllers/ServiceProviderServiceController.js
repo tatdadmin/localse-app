@@ -372,7 +372,7 @@ exports.saveServicePartnerRegistration = async(req,res)=>{
           service_provider_mobile_number: mobile ,// Mobile number of the service provider
           from: "Auto",                  // Sender of the notification
           readStatus: "0",  // Read status ('0' for unread, '1' for read)
-          addDate: new Date()
+          addDate: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
         })
 
         await newDataNotification.save();

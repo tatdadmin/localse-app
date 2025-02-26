@@ -43,7 +43,7 @@ exports.sendOtp = async ({ mobile, IpAddress, deviceOS, app_version }) => {
      });
 
     const otp = generateOTP();
-    const expiresAt = new Date();
+    const expiresAt = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
     expiresAt.setMinutes(expiresAt.getMinutes() + 5);
 
     let newLoginAttempt;
@@ -66,7 +66,7 @@ exports.sendOtp = async ({ mobile, IpAddress, deviceOS, app_version }) => {
         deviceOS,
         app_version,
         login_status: 0,
-        created_at: new Date(),
+        created_at: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
         user_type:"Service Provider",
         db_user:"Service Provider"
       });
@@ -119,7 +119,7 @@ exports.verifyOtp = async ({ mobile, otp }) => {
       return { success: false, status_code: 400, message: "Invalid OTP" };
     }
 
-    if (new Date() > loginAttempt.expires_at) {
+    if (new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000) > loginAttempt.expires_at) {
       return { success: false, status_code: 200, message: "OTP expired" };
     }
 
@@ -139,7 +139,7 @@ exports.verifyOtp = async ({ mobile, otp }) => {
       user = new Login({
         mobile_number: mobile,
         page_url: "Service Provider Login",
-        login_time: new Date(),
+        login_time: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
       });
 
       await user.save();
@@ -150,7 +150,7 @@ exports.verifyOtp = async ({ mobile, otp }) => {
 
     // Generate Refresh Token
     const refreshToken = generateRefreshToken({ mobile: user.mobile_number });
-    const refreshTokenExpiry = new Date();
+    const refreshTokenExpiry = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000);
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 30); // Valid for 30 days
 
     // User type (default: Service Provider)
