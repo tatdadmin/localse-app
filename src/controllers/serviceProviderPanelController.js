@@ -52,7 +52,7 @@ try {
     const newJsonBody= new ServiceProviderNoticeBoardClicks({
         service_provider_mobile_number: service_provider_mobile_number,
         noticeBoardId: notice_board_id,
-        addDate: new Date()
+        addDate: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
     })
 
     await newJsonBody.save();
@@ -154,10 +154,10 @@ async function serviceProviderClick(req,res){
     try {
         const service_provider_mobile_number= req.user.mobile;
 
-        const startOfDay = new Date();
+        const startOfDay = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
         startOfDay.setHours(0, 0, 0, 0); // Set time to the start of today (00:00:00)
       
-        const endOfDay = new Date();
+        const endOfDay = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
         endOfDay.setHours(23, 59, 59, 999); // Set time to the end of today (23:59:59.999)
       
         const todayClickCount = await CustomerServicesClicks.countDocuments({
@@ -165,8 +165,8 @@ async function serviceProviderClick(req,res){
           add_date: { $gte: startOfDay, $lt: endOfDay }, // Only count clicks between start and end of today
         });
 
-        const today = new Date();
-        const lastWeekStart = new Date();
+        const today = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
+        const lastWeekStart = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
         lastWeekStart.setDate(today.getDate() - 7); // Subtract 7 days for the start of the last week
       
         const weekClickCount = await CustomerServicesClicks.countDocuments({
@@ -264,7 +264,7 @@ async function handleServiceProviderVideoLibraryClicks(req,res){
             })
         }
         const newClickData= new ServiceProviderVideoLibraryClicks({
-            add_date: new Date(),
+            add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
             service_provider_mobile_number:service_provider_mobile_number,
             video_library_id:video_id
         });
@@ -339,7 +339,7 @@ async function handleServiceProviderPanelLogin(req,res){
             const lastDateTime = new Date(lastDate);
 
 // Get the current date and time as a Date object
-const currentDateTime = new Date();
+const currentDateTime = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
 // Calculate the difference in milliseconds
 const differenceInMilliseconds = currentDateTime - lastDateTime;
@@ -383,7 +383,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                         return res.status(400).json({status_code:400,message:"Service Provider not Found wiht panel Login as 0"})
                     }
                     result.panel_login="1";
-                    result.last_panel_login= new Date();
+                    result.last_panel_login= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
                     await result.save();
 
@@ -391,7 +391,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     const serviceProviderPanelLoginData = new ServiceProviderPanelLogins({
                         active_status:1,
                         service_provider_mobile_number:service_provider_mobile_number,
-                        add_date: new Date()
+                        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
                     });
                     await serviceProviderPanelLoginData.save();
                     return res.status(200).json({
@@ -413,7 +413,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
 
                 if(distanceWithBodyLatLongAndAdharLatLong <=40){
                     const newServiceProviderLatLongData = new service_provider_lat_long({
-                        add_date:new Date(),
+                        add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
                         mobile_number:service_provider_mobile_number,
                         latitude:new_latitude,
                         longitude: new_longitude,
@@ -436,14 +436,14 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     });
 
                     serviceProviderDataX.panel_login="1";
-                    serviceProviderDataX.last_panel_login= new Date();
+                    serviceProviderDataX.last_panel_login= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
                     await serviceProviderDataX.save();
 
                     const serviceProviderPanelLoginData = new ServiceProviderPanelLogins({
                         active_status:1,
                         service_provider_mobile_number:service_provider_mobile_number,
-                        add_date: new Date()
+                        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
                     });
                     await serviceProviderPanelLoginData.save();
                     return res.status(200).json({
@@ -524,7 +524,7 @@ async function buySubscriptionCheck(req,res){
         }
 
         const endDate = new Date(serviceProviderSubscriptionData.end_date);  // Your end_date from the database
-        const today = new Date();  // Current date and time
+        const today = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));  // Current date and time
 
 
         today.setHours(0, 0, 0, 0);
@@ -552,8 +552,8 @@ async function buySubscriptionCheck(req,res){
 async function serviceProviderBuySubscription(req,res){
     try {
         const service_provider_mobile_number= req.user.mobile;
-        const startDate= new Date();
-        const today = new Date();
+        const startDate= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+        const today = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
 
         today.setDate(today.getDate() + 30);
         const endDate = today;
@@ -561,7 +561,7 @@ async function serviceProviderBuySubscription(req,res){
             service_provider_mobile_number:service_provider_mobile_number,
             start_date:startDate,
             end_date:endDate,
-            add_date:new Date(),
+            add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
             order_id:"",
             payment_id: ""
         });
@@ -571,7 +571,7 @@ async function serviceProviderBuySubscription(req,res){
             service_provider_mobile_number:service_provider_mobile_number,
             start_date:startDate,
             end_date:endDate,
-            add_date:new Date(),
+            add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
             payment_id:"",
             order_id:""
         })

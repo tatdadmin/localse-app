@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const CustomerLatLongHitSchema = new Schema({
   add_date: {
     type: Date,
-    default: Date.now
+    default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+    // default: Date.now
     // () => moment().tz("Asia/Kolkata").toDate(), // Stores IST time
   },
   mobile_number: {
@@ -41,6 +42,11 @@ const CustomerLatLongHitSchema = new Schema({
   api_hit_url: {
     type: String,
     // required: false, // Optional field
+  },
+  createdAt: {
+    type: Date,
+    default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+    immutable: true, // Prevents modification after creation
   },
 });
 

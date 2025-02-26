@@ -13,7 +13,10 @@ const serviceProviderNotificationsVideosSchema = new Schema(
     view_status: { type: String,
         //  enum: ['0', '1'],
           default: '0' }, // View status (0 for not viewed, 1 for viewed)
-    add_date: { type: Date, default: Date.now }                 // Timestamp of when the video notification was added
+    add_date: { type: Date,
+      default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+      //  default: Date.now
+       }                 // Timestamp of when the video notification was added
   },
   {
     collection: 'service_provider_notifications_videos', // MongoDB collection name

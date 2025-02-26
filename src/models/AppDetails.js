@@ -5,7 +5,8 @@ const appDetailsSchema = new mongoose.Schema(
   {
     add_date: {
       type: Date,
-      default: Date.now, // Default to current timestamp if not provided
+      default:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+      // default: Date.now, // Default to current timestamp if not provided
     },
     app_url: {
       type: String,
@@ -46,9 +47,13 @@ const appDetailsSchema = new mongoose.Schema(
       required: true,
       default: 0, // Default to '0'
     },
+    createdAt:{
+      type:Date,
+      default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+    }
   },
   {
-    timestamps: true, // Mongoose will automatically manage createdAt and updatedAt fields
+    timestamps: false, // Mongoose will automatically manage createdAt and updatedAt fields
   }
 );
 

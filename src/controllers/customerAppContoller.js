@@ -334,9 +334,11 @@ async function handleCustomerCurrentAddress(req, res) {
     //       message: "Customer lat-long information updated successfully",
     //     });
     // } else {
+
+    const currentIST = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
       const newCustomerLatLong = new CustomerLatLong({
         mobile_number: mobileNumber,
-        add_date: new Date(),
+        add_date: currentIST,
         latitude,
         longitude,
         place_id,
@@ -458,6 +460,7 @@ async function saveUserAppDeviceInfo(req, res) {
       existingDevice.buildNumber = buildNumber || existingDevice.buildNumber;
       // existingDevice.isTablet = isTablet || existingDevice.isTablet;
       existingDevice.isTablet = isTablet || existingDevice.isTablet;
+      existingDevice.updatedAt= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
       // Save the updated device information
       await existingDevice.save();
@@ -469,6 +472,7 @@ async function saveUserAppDeviceInfo(req, res) {
     } else {
       // If the device does not exist, create a new one
       const newDevice = new AppDevice({
+        add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
         mobile_number: mobileNumber,
         user_type: userType,
         manufacturer: manufacturer || "",
@@ -855,7 +859,7 @@ async function insertRatingToServiceProvider(req,res){
         service_provider_number: serviceProvider.service_provider_mobile_number,
         rating: parseFloat(rating),
         remarks: remarks || '',
-        add_date: new Date()
+        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
       });
       await newRating.save();
       const avgRatingOfProvider= await getAverageRatingOfServiceProvider(serviceProvider.service_provider_mobile_number);
@@ -869,7 +873,7 @@ async function insertRatingToServiceProvider(req,res){
     else{
       existingCustomerRatingToServiceProvider.rating= parseFloat(rating);
       existingCustomerRatingToServiceProvider.remarks= remarks || "";
-      existingCustomerRatingToServiceProvider.update_date= new Date();
+      existingCustomerRatingToServiceProvider.update_date= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
       await existingCustomerRatingToServiceProvider.save();
 
       const avgRatingOfProvider= await getAverageRatingOfServiceProvider(serviceProvider.service_provider_mobile_number);
@@ -961,7 +965,7 @@ async function serviceProviderDelete(req,res){
      const CustomerData = new CustomerDeletedServiceProvider({
       mobile_number:customer_number,
       service_provider_mobile_number: serviceProvider.service_provider_mobile_number,
-      add_date: new Date()
+      add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
      }) ;
 
      await CustomerData.save();
@@ -1002,11 +1006,11 @@ async function HandleStoreClick(req,res){
     const existingCustomerServicesClicks = await CustomerServicesClicks.findOne({
       customer_mobile_number:customer_number,
       service_provider_mobile_number:serviceProvider.service_provider_mobile_number,
-      add_date: new Date()
+      add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
     })
     if(!existingCustomerServicesClicks){
       const newCustomerServiceClickData= new CustomerServicesClicks({
-        add_date: new Date(),
+        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
         customer_mobile_number:customer_number,
         service_provider_mobile_number:serviceProvider.service_provider_mobile_number,
         service_type:serviceProvider.service_type,

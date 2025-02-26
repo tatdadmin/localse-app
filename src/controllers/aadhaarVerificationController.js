@@ -198,7 +198,7 @@ exports.verifyAadhaarOTP = async (req, res) => {
 
     // Save verified data to MongoDB (assuming you have the model for this)
     const aadhaarData = {
-      add_date: new Date(),
+      add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
       mobile_number, // Add the mobile number from the decoded JWT
       aadhaar_number: responseData.data.aadhaar_number,
       ad_client_id: responseData.data.client_id,

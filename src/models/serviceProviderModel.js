@@ -48,8 +48,9 @@ const serviceProviderModelSchema = new mongoose.Schema(
     last_panel_login: { type: Date,
       //  default: "0000-00-00 00:00:00"
        },
+       createdAt:{type:Date,     default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))}
   },
-  { timestamps: true }
+  { timestamps: false}
 );
 
 module.exports = mongoose.model("ServiceProviderModel", serviceProviderModelSchema,"service_provider");

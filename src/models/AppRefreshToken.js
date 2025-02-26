@@ -34,7 +34,9 @@ const refreshTokenSchema = new mongoose.Schema({
   },
   created_at: {
     type: Date,
-    default: Date.now,
+    
+    default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+    // default: Date.now,
   },
 });
 
