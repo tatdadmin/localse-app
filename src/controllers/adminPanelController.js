@@ -5,6 +5,7 @@ require("dotenv").config();
 const axios = require("axios");
 const ServiceProviderNotifications = require("../models/ServiceProviderNotifications");
 const LocalseDictionary = require("../models/LocalseDictionary");
+const ServiceProviderNoticeBoard = require("../models/ServiceProviderNoticeBoard");
 
 // Google Translate API function
 const translateContent = async (text, targetLanguage) => {
@@ -199,7 +200,7 @@ try {
         ] = contentTranslations;
 
 
-        const notification = await ServiceProviderNotifications({
+        const notification = new ServiceProviderNotifications({
             subject,
             content,
             service_provider_mobile_number,
@@ -244,75 +245,14 @@ try {
 async function createNotice(req,res){
     try {
         const adminMobileNumber= req.user.mobile_number
-        const { subject, content, to_all, service_provider_mobile_number } = req.body;
+        const { subject, content } = req.body;
         if(!subject || !content){
             return res.status(400).json({
                 status_code:400,
                 message: "Provide subject and Content in Req Body"
             })
         }
-        if(to_all =="1"){
-            const serviceProvidersMobileNumbers= await serviceProviderModel.find({},"service_provider_mobile_number");
-            const serviceProviderMobiles= serviceProvidersMobileNumbers.map(sp => sp.service_provider_mobile_number);
-    
-            const translations = await Promise.all([
-                translateContent(subject, "hi"),
-                translateContent(subject, "ur"),
-                translateContent(subject, "mr"),
-                translateContent(subject, "ml"),
-                translateContent(subject, "ta"),
-                translateContent(subject, "te"),
-        
-                translateContent(content, "hi"),
-                translateContent(content, "ur"),
-                translateContent(content, "mr"),
-                translateContent(content, "ml"),
-                translateContent(content, "ta"),
-                translateContent(content, "te")
-            ]);
-        
-            const [
-                subject_hindi, subject_urdu, subject_marathi, subject_malayalam, subject_tamil, subject_telugu,
-                content_hindi, content_urdu, content_marathi, content_malayalam, content_tamil, content_telugu
-            ]= translations;
-        
-            const notifications = serviceProviderMobiles.map(mobile => ({
-                subject,
-                content,
-                service_provider_mobile_number: mobile,
-                from: adminMobileNumber,
-                readStatus: "0",
-                addDate: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
-                createdAt: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
-        
-                // Translated content
-                subject_hindi, content_hindi,
-                subject_marathi, content_marathi,
-                subject_urdu, content_urdu,
-                subject_malayalam, content_malayalam,
-                subject_tamil, content_tamil,
-                subject_telugu, content_telugu    
-            }));
-        
-            // Insert all notifications in one go (bulk insert)
-            await ServiceProviderNotifications.insertMany(notifications);
-    
-            return res.status(200).json({
-                status_code:200,
-                message:"Notifications have been sent Successfully To ALL"
-            })
-        }else if(to_all =="0" && service_provider_mobile_number){
-            const serviceProviderData= await serviceProviderModel.findOne({
-                service_provider_mobile_number:service_provider_mobile_number
-            })
-    
-            if(!serviceProviderData){
-                return res.status(400).json({
-                    status_code:400,
-                    message:"Service Provider Not Found with service_provider_mobile_number"
-                })
-            }
-    
+
             const languages = ["hi", "ur", "mr", "ml", "ta", "te"];
             const subjectTranslations = await Promise.all(
                 languages.map(lang => translateContent(subject, lang))
@@ -331,12 +271,10 @@ async function createNotice(req,res){
             ] = contentTranslations;
     
     
-            const notification = await ServiceProviderNotifications({
+            const notice = new ServiceProviderNoticeBoard({
                 subject,
                 content,
-                service_provider_mobile_number,
                 from:adminMobileNumber,
-                readStatus: "0",
                 addDate: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
                 createdAt: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
                 subject_hindi,
@@ -353,20 +291,14 @@ async function createNotice(req,res){
                 content_telugu
                 
             })  ;
-            await notification.save();
+            await notice.save();
     
             return res.status(200).json({
                 status_code:200,
-                message:`Notification Send Successfully to ${service_provider_mobile_number}` 
+                message:`Notice Created Successfully` 
             })
-        }else{
-            return res.status(400).json({
-                status_code:400,
-                message:"Plz provide Valid Json Body"
-            })
-        }
     } catch (error) {
-        console.log("Error in Create Notification",error)
+        console.log("Error in Creating Notice",error)
         return res
         .status(500)
         .json({ status_code: 500, message: "Internal server error" });

@@ -18,6 +18,7 @@ const serviceProviderNoticeBoardSchema = new Schema(
     content_telugu: { type: String, default: '' },
     subject_malayalam: { type: String, default: '' },
     content_malayalam: { type: String, default: '' },
+    from:{type:String,default:""},
     addDate: { type: Date,
       default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
       //  default: Date.now 
