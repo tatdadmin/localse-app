@@ -21,18 +21,26 @@ const PORT = process.env.PORT || 5000;
 
 
 // Allow requests from specific origins
-const allowedOrigins = ["http://localhost:3000", "http://localhost:8081"];
+// const allowedOrigins = ["http://localhost:3000", "http://localhost:8081"];
+
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true, // If using cookies or authentication
+//   })
+// );
+
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // If using cookies or authentication
+    origin: "*", // Allows all origins
+    credentials: true,
   })
 );
 
