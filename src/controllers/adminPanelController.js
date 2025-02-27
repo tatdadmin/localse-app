@@ -181,19 +181,22 @@ try {
             })
         }
 
-        let subject_hindi = await translateContent(subject, "hi");
-        let subject_urdu = await translateContent(subject, "ur");
-        let subject_marathi = await translateContent(subject, "mr");
-        let subject_malayalam = await translateContent(subject, "ml");
-        let subject_tamil = await translateContent(subject, "ta");
-        let subject_telugu = await translateContent(subject, "te");
-        
-        let content_hindi = await translateContent(content, "hi");
-        let content_urdu = await translateContent(content, "ur");
-        let content_marathi = await translateContent(content, "mr");
-        let content_malayalam = await translateContent(content, "ml");
-        let content_tamil = await translateContent(content, "ta");
-        let content_telugu = await translateContent(content, "te");
+        const languages = ["hi", "ur", "mr", "ml", "ta", "te"];
+        const subjectTranslations = await Promise.all(
+            languages.map(lang => translateContent(subject, lang))
+        );
+        const contentTranslations = await Promise.all(
+            languages.map(lang => translateContent(content, lang))
+        );
+        const [
+            subject_hindi, subject_urdu, subject_marathi, 
+            subject_malayalam, subject_tamil, subject_telugu
+        ] = subjectTranslations;
+
+        const [
+            content_hindi, content_urdu, content_marathi, 
+            content_malayalam, content_tamil, content_telugu
+        ] = contentTranslations;
 
 
         const notification = await ServiceProviderNotifications({
