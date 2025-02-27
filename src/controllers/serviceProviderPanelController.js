@@ -196,6 +196,32 @@ async function serviceProviderClick(req,res){
                 month_click:"30 Days",
                 month_click_count: monthClickCount ,
                 unread_notification: countOfUnreadNotification ,
+                
+                today_click_hindi: "आज",
+                today_click_bengali: "আজ",
+                today_click_urdu: "آج",
+                today_click_marathi: "आज",
+                today_click_malayalam: "ഇന്ന്",
+                today_click_tamil: "இன்று",
+                today_click_telugu: "ఈ రోజు",
+
+                week_click_hindi: "7 दिन",
+                week_click_bengali: "৭ দিন",
+                week_click_urdu: "7 دن",
+                week_click_marathi: "7 दिवस",
+                week_click_malayalam: "7 ദിവസം",
+                week_click_tamil: "7 நாட்கள்",
+                week_click_telugu: "7 రోజులు",
+
+                month_click_hindi: "30 दिन",
+                month_click_bengali: "৩০ দিন",
+                month_click_urdu: "30 دن",
+                month_click_marathi: "30 दिवस",
+                month_click_malayalam: "30 ദിവസം",
+                month_click_tamil: "30 நாட்கள்",
+                month_click_telugu: "30 రోజులు",
+
+
             }
         })
     } catch (error) {
