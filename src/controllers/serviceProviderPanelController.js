@@ -423,12 +423,26 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     return res.status(200).json({
                         status_code:200,
                         message: "Service provider successfully login",
+                        message_hindi: "सेवा प्रदाता सफलतापूर्वक लॉगिन हुआ",
+                        message_urdu: "سروس فراہم کنندہ کامیابی سے لاگ ان ہو گیا",
+                        message_bengali: "সেবা প্রদানকারী সফলভাবে লগইন করেছেন",
+                        message_marathi: "सेवा प्रदाता यशस्वीरित्या लॉगिन झाला",
+                        message_malayalam: "സേവന ദാതാവ് വിജയകരമായി ലോഗിൻ ചെയ്തു",
+                        message_tamil: "சேவை வழங்குநர் வெற்றிகரமாக உள்நுழைந்தார்",
+                        message_telugu: "సేవా ప్రదాత విజయవంతంగా లాగిన్ అయ్యారు",
                         p_status: true
                     })
                 }else{
                     return res.status(200).json({
                         status_code:200,
                         message: "You are not in a serviceable area",
+                        message_hindi: "आप सेवा योग्य क्षेत्र में नहीं हैं",
+                        message_urdu: "آپ کسی سروس ایریا میں نہیں ہیں",
+                        message_bengali: "আপনি পরিষেবা এলাকায় নেই",
+                        message_marathi: "तुम्ही सेवा क्षेत्रात नाही",
+                        message_malayalam: "നിങ്ങൾ സേവന മേഖലയിൽ ഇല്ല",
+                        message_tamil: "நீங்கள் சேவைப் பகுதியில் இல்லை",
+                        message_telugu: "మీరు సేవా విభాగంలో లేరు",
                         p_status:false
                     })
                 }
@@ -475,6 +489,13 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     return res.status(200).json({
                         status_code:200,
                         message: "Service provider successfully login",
+                        message_hindi: "सेवा प्रदाता सफलतापूर्वक लॉगिन हुआ",
+                        message_urdu: "سروس فراہم کنندہ کامیابی سے لاگ ان ہو گیا",
+                        message_bengali: "সেবা প্রদানকারী সফলভাবে লগইন করেছেন",
+                        message_marathi: "सेवा प्रदाता यशस्वीरित्या लॉगिन झाला",
+                        message_malayalam: "സേവന ദാതാവ് വിജയകരമായി ലോഗിൻ ചെയ്തു",
+                        message_tamil: "சேவை வழங்குநர் வெற்றிகரமாக உள்நுழைந்தார்",
+                        message_telugu: "సేవా ప్రదాత విజయవంతంగా లాగిన్ అయ్యారు",
                         p_status:true
                     })
 
@@ -482,6 +503,13 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     return res.status(200).json({
                         status_code: 200,
                         message: "You are not in a serviceable area.",
+                        message_hindi: "आप सेवा योग्य क्षेत्र में नहीं हैं",
+                        message_urdu: "آپ کسی سروس ایریا میں نہیں ہیں",
+                        message_bengali: "আপনি পরিষেবা এলাকায় নেই",
+                        message_marathi: "तुम्ही सेवा क्षेत्रात नाही",
+                        message_malayalam: "നിങ്ങൾ സേവന മേഖലയിൽ ഇല്ല",
+                        message_tamil: "நீங்கள் சேவைப் பகுதியில் இல்லை",
+                        message_telugu: "మీరు సేవా విభాగంలో లేరు",
                         p_status:false
                     })
                 }
@@ -509,6 +537,13 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
             return res.status(200).json({
                 status_code:200,
                 message: "Service Provider successfully Logout",
+                message_hindi: "सेवा प्रदाता सफलतापूर्वक लॉगआउट हुआ",
+                message_urdu: "سروس فراہم کنندہ کامیابی کے ساتھ لاگ آؤٹ ہوگیا",
+                message_bengali: "পরিষেবা প্রদানকারী সফলভাবে লগআউট করেছেন",
+                message_marathi: "सेवा प्रदाता यशस्वीरित्या लॉगआउट झाला",
+                message_malayalam: "സേവന ദാതാവ് വിജയകരമായി ലോഗൗട്ട് ചെയ്തു",
+                message_tamil: "சேவை வழங்குநர் வெற்றிகரமாக வெளியேறினார்",
+                message_telugu: "సేవా దాత విజయవంతంగా లాగ్ అవుట్ అయ్యారు",
                 p_status:false
             })
         }
