@@ -4,6 +4,7 @@ const serviceProviderModel = require("../models/serviceProviderModel");
 require("dotenv").config();
 const axios = require("axios");
 const ServiceProviderNotifications = require("../models/ServiceProviderNotifications");
+const LocalseDictionary = require("../models/LocalseDictionary");
 
 // Google Translate API function
 const translateContent = async (text, targetLanguage) => {
@@ -70,8 +71,30 @@ try {
 
     const adminData= {mobile_number,user_type:"Admin"};
     const adminJWTExp = process.env.ADMIN_JWTEXPIRATION;
-    const jwt= await generateJWT(adminData,adminJWTExp*60);
+    const jwt= await generateJWT(adminData,adminJWTExp*60*60*2.4);
     const refresh_token= await generateJWT(adminData,60*60*24);
+    
+    //we have added the data for localseDictionary
+    const currentData= await LocalseDictionary.find({});
+    if(currentData.length ==0){
+        const localseDictionaryData= new LocalseDictionary({
+            subject: "Welcome",
+            content: "Welcome to our platform",
+            subject_hindi: "स्वागत है",
+            content_hindi: "हमारे प्लेटफॉर्म में आपका स्वागत है",
+            subject_urdu: "خوش آمدید",
+            content_urdu: "ہمارے پلیٹ فارم میں خوش آمدید",
+            subject_marathi: "स्वागत आहे",
+            content_marathi: "आमच्या प्लॅटफॉर्मवर आपले स्वागत आहे",
+            subject_telugu: "స్వాగతం",
+            content_telugu: "మా ప్లాట్‌ఫామ్‌కు స్వాగతం",
+            subject_malayalam: "സ്വാഗതം",
+            content_malayalam: "ഞങ്ങളുടെ പ്ലാറ്റ്ഫോമിലേക്ക് സ്വാഗതം",
+            subject_tamil: "வரவேற்கிறோம்",
+            content_tamil: "எங்கள் தளத்திற்குச் வரவேற்கிறோம்",
+        })
+        await localseDictionaryData.save();
+    }
     return res.status(200).json({
         status_code:200,
         message:"Successfully Logged In",
