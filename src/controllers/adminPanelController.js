@@ -117,9 +117,9 @@ try {
         ]);
     
         const [
-            subjectHindi, subjectUrdu, subjectMarathi, subjectMalayalam, subjectTamil, subjectTelugu,
-            contentHindi, contentUrdu, contentMarathi, contentMalayalam, contentTamil, contentTelugu
-        ] = translations;
+            subject_hindi, subject_urdu, subject_marathi, subject_malayalam, subject_tamil, subject_telugu,
+            content_hindi, content_urdu, content_marathi, content_malayalam, content_tamil, content_telugu
+        ]= translations;
     
         const notifications = serviceProviderMobiles.map(mobile => ({
             subject,
@@ -131,12 +131,12 @@ try {
             createdAt: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
     
             // Translated content
-            subjectHindi, contentHindi,
-            subjectMarathi, contentMarathi,
-            subjectUrdu, contentUrdu,
-            subjectMalayalam, contentMalayalam,
-            subjectTamil, contentTamil,
-            subjectTelugu, contentTelugu
+            subject_hindi, content_hindi,
+            subject_marathi, content_marathi,
+            subject_urdu, content_urdu,
+            subject_malayalam, content_malayalam,
+            subject_tamil, content_tamil,
+            subject_telugu, content_telugu    
         }));
     
         // Insert all notifications in one go (bulk insert)
@@ -158,19 +158,19 @@ try {
             })
         }
 
-        let subjectHindi= await translateContent(subject,"hi");
-        let subjectUrdu= await translateContent(subject,"ur");
-        let subjectMarathi= await translateContent(subject,"mr");
-        let subjectMalayalam= await translateContent(subject,"ml");
-        let subjectTamil = await translateContent(subject,"ta");
-        let subjectTelugu = await translateContent(subject,"te");
-
-        let contentHindi= await translateContent(content,"hi");
-        let contentUrdu= await translateContent(content,"ur");
-        let contentMarathi= await translateContent(content,"mr");
-        let contentMalayalam= await translateContent(content,"ml");
-        let contentTamil= await translateContent(content,"ta");
-        let contentTelugu= await translateContent(content,"te");
+        let subject_hindi = await translateContent(subject, "hi");
+        let subject_urdu = await translateContent(subject, "ur");
+        let subject_marathi = await translateContent(subject, "mr");
+        let subject_malayalam = await translateContent(subject, "ml");
+        let subject_tamil = await translateContent(subject, "ta");
+        let subject_telugu = await translateContent(subject, "te");
+        
+        let content_hindi = await translateContent(content, "hi");
+        let content_urdu = await translateContent(content, "ur");
+        let content_marathi = await translateContent(content, "mr");
+        let content_malayalam = await translateContent(content, "ml");
+        let content_tamil = await translateContent(content, "ta");
+        let content_telugu = await translateContent(content, "te");
 
 
         const notification = await ServiceProviderNotifications({
@@ -181,18 +181,19 @@ try {
             readStatus: "0",
             addDate: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
             createdAt: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
-            subjectHindi,
-            contentHindi,
-            subjectMarathi,
-            contentMarathi,
-            subjectUrdu,
-            contentUrdu,
-            subjectMalayalam,
-            contentMalayalam,
-            subjectTamil,
-            contentTamil,
-            subjectTelugu,
-            contentTelugu
+            subject_hindi,
+            content_hindi,
+            subject_marathi,
+            content_marathi,
+            subject_urdu,
+            content_urdu,
+            subject_malayalam,
+            content_malayalam,
+            subject_tamil,
+            content_tamil,
+            subject_telugu,
+            content_telugu
+            
         })  ;
         await notification.save();
 
