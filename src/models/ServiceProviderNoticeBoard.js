@@ -4,10 +4,20 @@ const Schema = mongoose.Schema;
 // Define the schema
 const serviceProviderNoticeBoardSchema = new Schema(
   {
-    subjectHindi: { type: String, required: true },
-    contentHindi: { type: String, required: true },
-    subjectEnglish: { type: String, required: true },
-    contentEnglish: { type: String, required: true },
+    subject: { type: String, required: true },               // Subject of the notification
+    content: { type: String, required: true },               // Content of the notification
+    subject_hindi: { type: String, default: '' },
+    content_hindi: { type: String, default: '' },
+    subject_urdu: { type: String, default: '' },
+    content_urdu: { type: String, default: '' },
+    subject_marathi: { type: String, default: '' },
+    content_marathi: { type: String, default: '' },
+    subject_tamil: { type: String, default: '' },
+    content_tamil: { type: String, default: '' },
+    subject_telugu: { type: String, default: '' },
+    content_telugu: { type: String, default: '' },
+    subject_malayalam: { type: String, default: '' },
+    content_malayalam: { type: String, default: '' },
     addDate: { type: Date,
       default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
       //  default: Date.now 
