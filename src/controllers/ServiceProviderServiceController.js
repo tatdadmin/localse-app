@@ -13,6 +13,7 @@ const AgentLeads = require("../models/AgentLeads");
 const Login = require("../models/Login");
 const AppDetails = require("../models/AppDetails");
 const service_provider_lat_long = require("../models/service_provider_lat_long");
+require("dotenv").config();
 
 const verifyToken = (token) => {
   try {
@@ -343,6 +344,38 @@ exports.saveServicePartnerRegistration = async(req,res)=>{
         const [adharLat,adharLong]= await getLatitudeLongitude(FullAddress);
         againServiceProviderData.service_provider_name =  serviceProviderAdharVerificationData.ad_full_name;
         againServiceProviderData.aadhaar_address = FullAddress// serviceProviderAdharVerificationData.ad_address_location; // Update the aadhaar address as needed
+
+        const fullName = serviceProviderAdharVerificationData.ad_full_name;
+        const translations = await Promise.all([
+          translateContent(FullAddress, "hi"),
+          translateContent(FullAddress, "ur"),
+          translateContent(FullAddress, "mr"),
+          translateContent(FullAddress, "ml"),
+          translateContent(FullAddress, "ta"),
+          translateContent(FullAddress, "te"),
+  
+          translateContent(fullName, "hi"),
+          translateContent(fullName, "ur"),
+          translateContent(fullName, "mr"),
+          translateContent(fullName, "ml"),
+          translateContent(fullName, "ta"),
+          translateContent(fullName, "te")
+      ]);
+
+      againServiceProviderData.aadhaar_address_hindi = translations[0];
+      againServiceProviderData.aadhaar_address_urdu = translations[1];
+      againServiceProviderData.aadhaar_address_marathi = translations[2];
+      againServiceProviderData.aadhaar_address_malayalam = translations[3];
+      againServiceProviderData.aadhaar_address_tamil = translations[4];
+      againServiceProviderData.aadhaar_address_telugu = translations[5];
+      
+      againServiceProviderData.service_provider_name_hindi = translations[6];
+      againServiceProviderData.service_provider_name_urdu = translations[7];
+      againServiceProviderData.service_provider_name_marathi = translations[8];
+      againServiceProviderData.service_provider_name_malayalam = translations[9];
+      againServiceProviderData.service_provider_name_tamil = translations[10];
+      againServiceProviderData.service_provider_name_telugu = translations[11];
+
         againServiceProviderData.active_status = "1";
         againServiceProviderData.aadhaar_address_latlong=`${adharLat},${adharLong}`;
 
@@ -369,28 +402,28 @@ exports.saveServicePartnerRegistration = async(req,res)=>{
         const newDataNotification= new ServiceProviderNotifications({
           subject: "Welcome to Localse."  ,         // Subject of the notification
           content:  "You’ve just taken the first step toward something extraordinary.\nWe’re excited to have you as part of our community.\nLocalse is where opportunities and action come together.\nLet’s move forward together.",               // Content of the notification
-          subjectHindi: "लोकलसे में आपका स्वागत है।",
-          contentHindi: "आपने कुछ असाधारण की ओर पहला कदम बढ़ाया है।\nहम आपको हमारे समुदाय का हिस्सा बनकर उत्साहित हैं।\nलोकलसे वह जगह है जहाँ अवसर और कार्य एक साथ आते हैं।\nआइए साथ मिलकर आगे बढ़ें।",
+          subject_hindi: "लोकलसे में आपका स्वागत है।",
+          content_hindi: "आपने कुछ असाधारण की ओर पहला कदम बढ़ाया है।\nहम आपको हमारे समुदाय का हिस्सा बनकर उत्साहित हैं।\nलोकलसे वह जगह है जहाँ अवसर और कार्य एक साथ आते हैं।\nआइए साथ मिलकर आगे बढ़ें।",
           
           // Urdu
-          subjectUrdu: "لوکالز میں خوش آمدید۔",
-          contentUrdu: "آپ نے کچھ غیر معمولی کی طرف پہلا قدم اٹھایا ہے۔\nہمیں خوشی ہے کہ آپ ہمارے کمیونٹی کا حصہ ہیں۔\nلوکالز وہ جگہ ہے جہاں مواقع اور عمل ایک ساتھ آتے ہیں۔\nآئیے مل کر آگے بڑھیں۔",
+          subject_urdu: "لوکالز میں خوش آمدید۔",
+          content_urdu: "آپ نے کچھ غیر معمولی کی طرف پہلا قدم اٹھایا ہے۔\nہمیں خوشی ہے کہ آپ ہمارے کمیونٹی کا حصہ ہیں۔\nلوکالز وہ جگہ ہے جہاں مواقع اور عمل ایک ساتھ آتے ہیں۔\nآئیے مل کر آگے بڑھیں۔",
           
           // Marathi
-          subjectMarathi: "लोकलसे मध्ये आपले स्वागत आहे.",
-          contentMarathi: "तुम्ही काहीतरी असामान्य करण्यासाठी पहिलं पाऊल टाकलं आहे.\nआम्हाला आनंद आहे की तुम्ही आमच्या समुदायाचा भाग आहात.\nलोकलसे ही अशी जागा आहे जिथे संधी आणि कृती एकत्र येतात.\nचला एकत्र पुढे जाऊया.",
+          subject_marathi: "लोकलसे मध्ये आपले स्वागत आहे.",
+          content_marathi: "तुम्ही काहीतरी असामान्य करण्यासाठी पहिलं पाऊल टाकलं आहे.\nआम्हाला आनंद आहे की तुम्ही आमच्या समुदायाचा भाग आहात.\nलोकलसे ही अशी जागा आहे जिथे संधी आणि कृती एकत्र येतात.\nचला एकत्र पुढे जाऊया.",
         
           // Tamil
-          subjectTamil: "லோகல்ஸுக்கு வரவேற்கிறோம்.",
-          contentTamil: "நீங்கள் ஏதோ அசாதாரணமான ஒன்றை நோக்கி முதல் அடியெடுத்து வைத்துள்ளீர்கள்.\nநாங்கள் உங்களை எங்கள் சமூகத்தில் சேர்வதற்கு உற்சாகமாக இருக்கிறோம்.\nலோகல்ஸ் என்பது வாய்ப்புகளும் செயல்பாடுகளும் ஒன்றாக கூடும் இடம்.\nநாம் ஒன்றாக முன்னேறலாம்.",
+          subject_tamil: "லோகல்ஸுக்கு வரவேற்கிறோம்.",
+          content_tamil: "நீங்கள் ஏதோ அசாதாரணமான ஒன்றை நோக்கி முதல் அடியெடுத்து வைத்துள்ளீர்கள்.\nநாங்கள் உங்களை எங்கள் சமூகத்தில் சேர்வதற்கு உற்சாகமாக இருக்கிறோம்.\nலோகல்ஸ் என்பது வாய்ப்புகளும் செயல்பாடுகளும் ஒன்றாக கூடும் இடம்.\nநாம் ஒன்றாக முன்னேறலாம்.",
         
           // Telugu
-          subjectTelugu: "లోకల్స్‌కు స్వాగతం.",
-          contentTelugu: "మీరు అద్భుతమైన దిశగా మొదటి అడుగు వేసారు.\nమేము మిమ్మల్ని మా సముదాయంలో భాగమవ్వడం చాలా ఆనందంగా ఉంది.\nలోకల్స్ అనేది అవకాశాలు మరియు చర్యలు కలుసుకునే ప్రదేశం.\nమనమందరం కలిసి ముందుకు సాగుదాం.",
+          subject_telugu: "లోకల్స్‌కు స్వాగతం.",
+          content_telugu: "మీరు అద్భుతమైన దిశగా మొదటి అడుగు వేసారు.\nమేము మిమ్మల్ని మా సముదాయంలో భాగమవ్వడం చాలా ఆనందంగా ఉంది.\nలోకల్స్ అనేది అవకాశాలు మరియు చర్యలు కలుసుకునే ప్రదేశం.\nమనమందరం కలిసి ముందుకు సాగుదాం.",
         
           // Malayalam
-          subjectMalayalam: "ലോകല്സിലേക്ക് സ്വാഗതം.",
-          contentMalayalam: "നിങ്ങൾ ഒരു അത്യന്തം ശ്രദ്ധേയമായ ദിശയിലേക്ക് ആദ്യ ചുവട് വച്ചു.\nനിങ്ങളെ ഞങ്ങളുടെ സമൂഹത്തിലെ അംഗമാക്കാൻ ഞങ്ങൾ ആവേശഭരിതരാണ്.\nലോകല്സ് എന്നത് അവസരങ്ങളും പ്രവർത്തനങ്ങളും ഒന്നിച്ച് വരുന്ന ഇടമാണ്.\nനാം ഒരുമിച്ച് മുന്നോട്ട് പോകാം.",
+          subject_malayalam: "ലോകല്സിലേക്ക് സ്വാഗതം.",
+          content_malayalam: "നിങ്ങൾ ഒരു അത്യന്തം ശ്രദ്ധേയമായ ദിശയിലേക്ക് ആദ്യ ചുവട് വച്ചു.\nനിങ്ങളെ ഞങ്ങളുടെ സമൂഹത്തിലെ അംഗമാക്കാൻ ഞങ്ങൾ ആവേശഭരിതരാണ്.\nലോകല്സ് എന്നത് അവസരങ്ങളും പ്രവർത്തനങ്ങളും ഒന്നിച്ച് വരുന്ന ഇടമാണ്.\nനാം ഒരുമിച്ച് മുന്നോട്ട് പോകാം.",
         
           service_provider_mobile_number: mobile ,// Mobile number of the service provider
           from: "Auto",                  // Sender of the notification
@@ -433,6 +466,30 @@ exports.saveServicePartnerRegistration = async(req,res)=>{
   }
 
 }
+
+const translateContent = async (text, targetLanguage) => {
+  if (!(text && targetLanguage)) {
+    return text;
+  }
+  try {
+    const response = await axios.post(
+      `https://translation.googleapis.com/language/translate/v2`,
+      {},
+      {
+        params: {
+          q: text,
+          target: targetLanguage,
+          key: process.env.GOOGLE_TRANSLATE_API_KEY,
+        },
+      }
+    );
+
+    return response.data.data.translations[0].translatedText;
+  } catch (error) {
+    console.error("Translation Error:", error.response?.data || error.message);
+    return text; // Return original text if an error occurs
+  }
+};
 
 async function generateAadhaarAddress(serviceProviderAadharVerificationData) {
   // Combine address fields into a single string
