@@ -2,6 +2,7 @@
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db");
+const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const serviceProviderRoutes = require("./routes/serviceProviderRoutes");
 const appDeviceRoutes = require("./routes/appDeviceRoutes");
@@ -15,6 +16,25 @@ const adminPanelRoute= require("./routes/adminPanelRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+
+
+
+// Allow requests from specific origins
+const allowedOrigins = ["http://localhost:3000", "http://localhost:8081"];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // If using cookies or authentication
+  })
+);
 
 
 const bodyParser = require('body-parser');
