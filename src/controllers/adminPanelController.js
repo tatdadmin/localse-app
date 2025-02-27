@@ -304,9 +304,35 @@ async function createNotice(req,res){
         .json({ status_code: 500, message: "Internal server error" });
     }
     }
-
+async function getAllNotice(req,res){
+    try {
+        const allNoticeData= await ServiceProviderNoticeBoard.find({});
+        return res.status(200).json({
+            status_code:200,
+            message:"Successfully Retrieved Notices",
+            data:allNoticeData
+        })
+    } catch (error) {
+        console.log("Error in Getting Notice",error)
+        return res
+        .status(500)
+        .json({ status_code: 500, message: "Internal server error" });        
+    }
+}
+async function getAllNotification(req,res){
+    try {
+        
+    } catch (error) {
+        console.log("Error in Getting Notice",error)
+        return res
+        .status(500)
+        .json({ status_code: 500, message: "Internal server error" }); 
+    }
+}
 module.exports={
 handleAdminLogin,
 createNotification,
-createNotice
+createNotice,
+getAllNotice,
+getAllNotification
 }  
