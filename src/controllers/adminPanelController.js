@@ -321,9 +321,37 @@ async function getAllNotice(req,res){
 }
 async function getAllNotification(req,res){
     try {
-        
+        const {service_provider_mobile_number} = req.query;
+        let notificationData;
+        if(service_provider_mobile_number){
+            notificationData= await ServiceProviderNotifications.find({
+                service_provider_mobile_number:service_provider_mobile_number
+            }).sort({addDate: -1});
+        }else{
+            notificationData= await ServiceProviderNotifications.find({}).sort({addDate: -1});
+        }
+        return res.status(200).json({
+            status_code:200,
+            message:"All Notifications Retrieved Successfully",
+            data:notificationData
+        })
     } catch (error) {
-        console.log("Error in Getting Notice",error)
+        console.log("Error in Getting All Notification",error)
+        return res
+        .status(500)
+        .json({ status_code: 500, message: "Internal server error" }); 
+    }
+}
+async function getAllServiceProvider(req,res){
+    try {
+        const allServiceProvidersData= await serviceProviderModel.find({}).sort({createdAt: -1});
+        return res.status(200).json({
+            status_code:200,
+            message:"All Service Provider Retrieved Succussfully",
+            data:allServiceProvidersData
+        })
+    } catch (error) {
+        console.log("Error in Getting All Service Provider",error)
         return res
         .status(500)
         .json({ status_code: 500, message: "Internal server error" }); 
@@ -334,5 +362,6 @@ handleAdminLogin,
 createNotification,
 createNotice,
 getAllNotice,
-getAllNotification
+getAllNotification,
+getAllServiceProvider
 }  
