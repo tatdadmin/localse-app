@@ -6,6 +6,7 @@ const axios = require("axios");
 const ServiceProviderNotifications = require("../models/ServiceProviderNotifications");
 const LocalseDictionary = require("../models/LocalseDictionary");
 const ServiceProviderNoticeBoard = require("../models/ServiceProviderNoticeBoard");
+const { default: mongoose } = require("mongoose");
 
 // Google Translate API function
 const translateContent = async (text, targetLanguage) => {
@@ -357,11 +358,71 @@ async function getAllServiceProvider(req,res){
         .json({ status_code: 500, message: "Internal server error" }); 
     }
 }
+
+async function deleteNoticeById(req,res){
+    try {
+        const {id}= req.body;
+        if (!id) {
+            return res.status(400).json({status_code:400, message: "Notice ID is required" });
+        }
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({status_code:400, message: "Invalid Notice ID format" });
+        }
+
+        const deletedNotice = await ServiceProviderNoticeBoard.findByIdAndDelete(id);
+
+        if (!deletedNotice) {
+            return res.status(400).json({status_code:400, message: "Notice not found with provided id" });
+        }
+
+        res.status(200).json({ 
+            status_code:200,
+            message: "Notice deleted successfully"
+         });
+    } catch (error) {
+        console.log("Error in Deleting Notice by Id",error)
+        return res
+        .status(500)
+        .json({ status_code: 500, message: "Internal server error" }); 
+    }
+}
+
+async function deleteNotificationById(req,res){
+    try {
+        const {id}= req.body;
+        if (!id) {
+            return res.status(400).json({status_code:400, message: "Notice ID is required" });
+        }
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({status_code:400, message: "Invalid Notice ID format" });
+        }
+        const deletedNotification = await ServiceProviderNotifications.findByIdAndDelete(id);
+        
+        if(!deletedNotification){
+            return res.status(400).json({
+                status_code:400,
+                message:"Notification Not Found with Provided id"
+            })
+        }
+        return res.status(200).json({
+            status_code:200,
+            message:`Notification Deleted Succussfully with id=${id}`
+        })
+    } catch (error) {
+        console.log("Error in Deleting Notification by Id",error)
+        return res
+        .status(500)
+        .json({ status_code: 500, message: "Internal server error" }); 
+    }
+}
+
 module.exports={
 handleAdminLogin,
 createNotification,
 createNotice,
 getAllNotice,
 getAllNotification,
-getAllServiceProvider
+getAllServiceProvider,
+deleteNoticeById,
+deleteNotificationById
 }  
