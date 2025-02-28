@@ -559,9 +559,10 @@ async function getServiceTypeFromServiceProvide(req, res) {
           .map((provider) => provider.service_type);
 
         const distinctServices = [...new Set(nearbyServiceProviders)];
+        const finalDistinctServices= await filterDistinctServices(mobileNumber,distinctServices);
         return res
           .status(200)
-          .json({ status_code: 200, data: distinctServices,
+          .json({ status_code: 200, data: finalDistinctServices,
               address:existingCustomerLatLong.address,
               CustomerLatLongData: `${existingCustomerLattitude},${existingCustomerLongitude}`
            });
@@ -572,6 +573,78 @@ async function getServiceTypeFromServiceProvide(req, res) {
     return res.status(500).json({ message: "Internal server error" });
   }
 }
+async function filterDistinctServices(mobileNumber, distinctServices) {
+  try {
+    const filteredServices = [];
+
+    for (const serviceType of distinctServices) {
+      const filteredData = await getServiceProviderListDataBasedOnServicesType(mobileNumber, serviceType);
+      
+      if (filteredData.length > 0) {
+        filteredServices.push(serviceType);
+      }
+    }
+
+    return filteredServices;
+  } catch (error) {
+    console.error("Error filtering distinct services:", error);
+    return distinctServices;
+  }
+}
+
+
+async function getServiceProviderListDataBasedOnServicesType(mobileNumber, serviceType) {
+  try {
+    if (!serviceType) return []; // Return empty if serviceType is missing
+
+    const existingCustomerLatLong = await CustomerLatLong.findOne({
+      mobile_number: mobileNumber,
+    }).sort({ add_date: -1 });
+
+    if (!existingCustomerLatLong || !existingCustomerLatLong.latitude || !existingCustomerLatLong.longitude) {
+      return await serviceProviderModel.find({
+        service_type: { $regex: new RegExp(serviceType, 'i') },
+        active_status: "1",
+        panel_login: "1"
+      });
+    }
+
+    const serviceProviders = await serviceProviderModel.find({
+      service_type: { $regex: new RegExp(serviceType, 'i') },
+      active_status: "1",
+      panel_login: "1"
+    });
+
+    const customerLat = parseFloat(existingCustomerLatLong.latitude);
+    const customerLon = parseFloat(existingCustomerLatLong.longitude);
+
+    const nearbyServiceProviders = serviceProviders
+      .map(provider => {
+        const [providerLat, providerLon] = provider.current_latlong.split(",").map(Number);
+        provider.distance = calculateDistance(customerLat, customerLon, providerLat, providerLon);
+        return provider;
+      })
+      .filter(provider => provider.distance <= AllowedSearchServiceProviders)
+      .sort((a, b) => a.distance - b.distance);
+
+    let newJson = nearbyServiceProviders.map(provider => ({
+      ...provider.toObject(),
+      distance: provider.distance,
+      service_provider_address: provider.aadhaar_address,
+      service_provider_img_src: provider.service_provider_image,
+    }));
+
+    const deletedData = await CustomerDeletedServiceProvider.find({ mobile_number: mobileNumber });
+    const deletedServiceProviders = deletedData.map(item => item.service_provider_mobile_number);
+
+    const filteredData = newJson.filter(item => !deletedServiceProviders.includes(item.service_provider_mobile_number));
+    return filteredData;
+  } catch (error) {
+    console.error("Error fetching service providers:", error);
+    return [];
+  }
+}
+
 // function to find distance bw 2 latlong addresses
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Radius of the Earth in km
