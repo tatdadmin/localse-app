@@ -172,62 +172,67 @@ try {
             message:"Notifications have been sent Successfully To ALL"
         })
     }else if(to_all =="0" && service_provider_mobile_number){
-        const serviceProviderData= await serviceProviderModel.findOne({
-            service_provider_mobile_number:service_provider_mobile_number
-        })
+      
+        const mobileNumbers = service_provider_mobile_number.split(",").map(num => num.trim()); // Convert to array
 
-        if(!serviceProviderData){
-            return res.status(400).json({
-                status_code:400,
-                message:"Service Provider Not Found with service_provider_mobile_number"
-            })
+        for (const mobileNumber of mobileNumbers) {
+            const serviceProviderData = await serviceProviderModel.findOne({
+                service_provider_mobile_number: mobileNumber
+            });
+    
+            if (!serviceProviderData) {
+                return res.status(400).json({
+                    status_code: 400,
+                    message: `Service Provider Not Found with service_provider_mobile_number: ${mobileNumber}`
+                });
+            }
+
         }
-
-        const languages = ["hi", "ur", "mr", "ml", "ta", "te"];
-        const subjectTranslations = await Promise.all(
-            languages.map(lang => translateContent(subject, lang))
-        );
-        const contentTranslations = await Promise.all(
-            languages.map(lang => translateContent(content, lang))
-        );
+        const translations = await Promise.all([
+            translateContent(subject, "hi"),
+            translateContent(subject, "ur"),
+            translateContent(subject, "mr"),
+            translateContent(subject, "ml"),
+            translateContent(subject, "ta"),
+            translateContent(subject, "te"),
+    
+            translateContent(content, "hi"),
+            translateContent(content, "ur"),
+            translateContent(content, "mr"),
+            translateContent(content, "ml"),
+            translateContent(content, "ta"),
+            translateContent(content, "te")
+        ]);
+    
         const [
-            subject_hindi, subject_urdu, subject_marathi, 
-            subject_malayalam, subject_tamil, subject_telugu
-        ] = subjectTranslations;
-
-        const [
-            content_hindi, content_urdu, content_marathi, 
-            content_malayalam, content_tamil, content_telugu
-        ] = contentTranslations;
-
-
-        const notification = new ServiceProviderNotifications({
+            subject_hindi, subject_urdu, subject_marathi, subject_malayalam, subject_tamil, subject_telugu,
+            content_hindi, content_urdu, content_marathi, content_malayalam, content_tamil, content_telugu
+        ]= translations;
+    
+        const notifications = mobileNumbers.map(mobile => ({
             subject,
             content,
-            service_provider_mobile_number,
-            from:adminMobileNumber,
+            service_provider_mobile_number: mobile,
+            from: adminMobileNumber,
             readStatus: "0",
             addDate: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
             createdAt: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
-            subject_hindi,
-            content_hindi,
-            subject_marathi,
-            content_marathi,
-            subject_urdu,
-            content_urdu,
-            subject_malayalam,
-            content_malayalam,
-            subject_tamil,
-            content_tamil,
-            subject_telugu,
-            content_telugu
-            
-        })  ;
-        await notification.save();
+    
+            // Translated content
+            subject_hindi, content_hindi,
+            subject_marathi, content_marathi,
+            subject_urdu, content_urdu,
+            subject_malayalam, content_malayalam,
+            subject_tamil, content_tamil,
+            subject_telugu, content_telugu    
+        }));
+    
+        // Insert all notifications in one go (bulk insert)
+        await ServiceProviderNotifications.insertMany(notifications);
 
         return res.status(200).json({
             status_code:200,
-            message:`Notification Send Successfully to ${service_provider_mobile_number}` 
+            message:`Notification Send Successfully to ${mobileNumbers}` 
         })
     }else{
         return res.status(400).json({
@@ -397,7 +402,7 @@ async function deleteNotificationById(req,res){
             return res.status(400).json({status_code:400, message: "Invalid Notice ID format" });
         }
         const deletedNotification = await ServiceProviderNotifications.findByIdAndDelete(id);
-        
+
         if(!deletedNotification){
             return res.status(400).json({
                 status_code:400,
