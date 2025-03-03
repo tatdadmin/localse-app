@@ -21,6 +21,7 @@ const RefreshToken = require("../models/AppRefreshToken");
 const Login = require("../models/Login");
 const AppLoginAttempt = require("../models/AppLoginAttempt");
 const CustomerLatLongHit = require("../models/CustomerLatLongHit");
+const CustomerProfile = require("../models/customerProfileModel")
 require("dotenv").config();
 
 async function generateJWT(user, timeInSecond) {
@@ -67,6 +68,16 @@ async function handleVerifyOtp(req, res) {
       return res.status(401).json({ message: "Invalid or expired OTP" });
     }
 
+
+    let customerProfile = await CustomerProfile.findOne({ mobile_no: mobile });
+
+    if (!customerProfile) {
+      customerProfile = new CustomerProfile({
+        mobile_no: mobile,
+      });
+
+      await customerProfile.save();
+    }
     // OTP is valid, proceed with further steps
 
     const loginExistOfUser = await Login.findOne({ mobile_number: mobile,page_url: "Customer Login" });
