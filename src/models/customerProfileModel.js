@@ -6,7 +6,7 @@ const customerProfileSchema = new mongoose.Schema({
   last_name: { type: String,default: ""},
   email: { type: String,default: ""},
   image: { type: String, default: "" }, // S3 URL
-  permanen_address: { type: String,default: ""},
+  permanent_address: { type: String,default: ""},
   title: { type: String, default: ""},
   createdAt: {
     type: Date,
