@@ -1199,6 +1199,45 @@ async function customerLatLongHit(req,res){
     .json({ status_code: 500, message: "Internal server error" });
   }
 }
+async function getRecentClickedServiceProvider(req,res){
+  try {
+    const customer_number = req.user.mobile_number;
+  
+  
+    const serviceProviderNumbers = await CustomerServicesClicks.aggregate([
+      { $match: { customer_mobile_number: customer_number } }, 
+      { $sort: { add_date: -1 } },
+      {
+        $group: {
+          _id: "$service_provider_mobile_number", 
+          latestAddDate: { $first: "$add_date" } 
+        }
+      },
+      { $sort: { latestAddDate: -1 } },
+      { $limit: 20 },
+      { $project: { _id: 0, service_provider_mobile_number: "$_id" } } 
+    ]);
+    
+    const mobileNumbers = serviceProviderNumbers.map(sp => sp.service_provider_mobile_number);
+  
+    const serviceProvidersData = await serviceProviderModel.find({
+      service_provider_mobile_number: { $in: mobileNumbers }
+    }).lean();
+  
+    return res.status(200).json({
+      status_code:200,
+      message:"data for recent Clicked service providers retrieved successfully",
+      data:serviceProvidersData
+    })
+  
+  } catch (error) {
+    console.log("Error in Getting Recent Clicked Service Provider",error)
+    return res
+    .status(500)
+    .json({ status_code: 500, message: "Internal server error" });
+  }
+  }
+  
 module.exports = {
   handleLoginAttempt,
   handleVerifyOtp,
@@ -1215,5 +1254,6 @@ module.exports = {
   serviceProviderDelete,
   HandleStoreClick,
   getAppVersionInfo,
-  customerLatLongHit
+  customerLatLongHit,
+  getRecentClickedServiceProvider
 };

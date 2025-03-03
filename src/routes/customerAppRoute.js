@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const authenticateJWT = require('../middlewares/customerAuth.js');
-const { handleVerifyOtp, saveUserAppDeviceInfo, handleLoginAttempt, saveFCMToken, getServiceTypeFromServiceProvide, handleCustomerCurrentAddress, generateJWTTokenWithRefreshToken, filterSearchServiceTypeApi, getServiceProviderListBasedOnServicesType, insertRatingToServiceProvider, showRatingModel, serviceProviderDelete, HandleStoreClick, getAppVersionInfo, getCustomerlatlong, customerLatLongHit } = require('../controllers/customerAppContoller.js');
+const { handleVerifyOtp, saveUserAppDeviceInfo, handleLoginAttempt, saveFCMToken, getServiceTypeFromServiceProvide, handleCustomerCurrentAddress, generateJWTTokenWithRefreshToken, filterSearchServiceTypeApi, getServiceProviderListBasedOnServicesType, insertRatingToServiceProvider, showRatingModel, serviceProviderDelete, HandleStoreClick, getAppVersionInfo, getCustomerlatlong, customerLatLongHit, getRecentClickedServiceProvider } = require('../controllers/customerAppContoller.js');
 const profileController = require('../controllers/customerProfileController.js');
 
 // Define the POST route for /api/mobileOTP using the sendOTP controller function
@@ -30,4 +30,6 @@ router.post('/authentication/get-app-version-info',authenticateJWT,getAppVersion
 router.post('/home/customer-lat-long-hit',authenticateJWT,customerLatLongHit)
 router.put('/profile-update', authenticateJWT,profileController.uploadProfileImage, profileController.updateProfile)
 router.get("/get-profile", authenticateJWT, profileController.getCustomerProfile);
+router.get('/service_provider_listing/get-recent-service-provider',authenticateJWT,getRecentClickedServiceProvider)
+
 module.exports = router;
