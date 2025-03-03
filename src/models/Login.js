@@ -16,8 +16,14 @@ const loginSchema = new mongoose.Schema({
   login_time: {
     type: Date,
     required: true,
-    default: new Date(0) // Equivalent to 1970-01-01T00:00:00Z
-  }
+    default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+    // default: new Date(0) // Equivalent to 1970-01-01T00:00:00Z
+  },
+  createdAt: {
+    type: Date,
+    default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+    immutable: true, // Prevents modification after creation
+  },
 });
 
 const Login = mongoose.model('Login', loginSchema,"login");

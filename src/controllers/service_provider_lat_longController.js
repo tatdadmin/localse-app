@@ -15,7 +15,8 @@ exports.createServiceProviderLatLong = async (req, res) => {
     const mobile_number = decodedToken.mobile;
 
     const newLocation = new ServiceProviderLatLong({
-      add_date: moment().format("YYYY-MM-DD HH:mm:ss"),
+      add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
+      // moment().format("YYYY-MM-DD HH:mm:ss"),
       mobile_number,
       latitude,
       longitude,

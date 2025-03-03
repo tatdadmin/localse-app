@@ -52,7 +52,7 @@ try {
     const newJsonBody= new ServiceProviderNoticeBoardClicks({
         service_provider_mobile_number: service_provider_mobile_number,
         noticeBoardId: notice_board_id,
-        addDate: new Date()
+        addDate: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
     })
 
     await newJsonBody.save();
@@ -154,10 +154,10 @@ async function serviceProviderClick(req,res){
     try {
         const service_provider_mobile_number= req.user.mobile;
 
-        const startOfDay = new Date();
+        const startOfDay = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
         startOfDay.setHours(0, 0, 0, 0); // Set time to the start of today (00:00:00)
       
-        const endOfDay = new Date();
+        const endOfDay = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
         endOfDay.setHours(23, 59, 59, 999); // Set time to the end of today (23:59:59.999)
       
         const todayClickCount = await CustomerServicesClicks.countDocuments({
@@ -165,8 +165,8 @@ async function serviceProviderClick(req,res){
           add_date: { $gte: startOfDay, $lt: endOfDay }, // Only count clicks between start and end of today
         });
 
-        const today = new Date();
-        const lastWeekStart = new Date();
+        const today = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
+        const lastWeekStart = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
         lastWeekStart.setDate(today.getDate() - 7); // Subtract 7 days for the start of the last week
       
         const weekClickCount = await CustomerServicesClicks.countDocuments({
@@ -196,6 +196,32 @@ async function serviceProviderClick(req,res){
                 month_click:"30 Days",
                 month_click_count: monthClickCount ,
                 unread_notification: countOfUnreadNotification ,
+                
+                today_click_hindi: "आज",
+                today_click_bengali: "আজ",
+                today_click_urdu: "آج",
+                today_click_marathi: "आज",
+                today_click_malayalam: "ഇന്ന്",
+                today_click_tamil: "இன்று",
+                today_click_telugu: "ఈ రోజు",
+
+                week_click_hindi: "7 दिन",
+                week_click_bengali: "৭ দিন",
+                week_click_urdu: "7 دن",
+                week_click_marathi: "7 दिवस",
+                week_click_malayalam: "7 ദിവസം",
+                week_click_tamil: "7 நாட்கள்",
+                week_click_telugu: "7 రోజులు",
+
+                month_click_hindi: "30 दिन",
+                month_click_bengali: "৩০ দিন",
+                month_click_urdu: "30 دن",
+                month_click_marathi: "30 दिवस",
+                month_click_malayalam: "30 ദിവസം",
+                month_click_tamil: "30 நாட்கள்",
+                month_click_telugu: "30 రోజులు",
+
+
             }
         })
     } catch (error) {
@@ -264,7 +290,7 @@ async function handleServiceProviderVideoLibraryClicks(req,res){
             })
         }
         const newClickData= new ServiceProviderVideoLibraryClicks({
-            add_date: new Date(),
+            add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
             service_provider_mobile_number:service_provider_mobile_number,
             video_library_id:video_id
         });
@@ -339,7 +365,7 @@ async function handleServiceProviderPanelLogin(req,res){
             const lastDateTime = new Date(lastDate);
 
 // Get the current date and time as a Date object
-const currentDateTime = new Date();
+const currentDateTime = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
 // Calculate the difference in milliseconds
 const differenceInMilliseconds = currentDateTime - lastDateTime;
@@ -383,7 +409,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                         return res.status(400).json({status_code:400,message:"Service Provider not Found wiht panel Login as 0"})
                     }
                     result.panel_login="1";
-                    result.last_panel_login= new Date();
+                    result.last_panel_login= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
                     await result.save();
 
@@ -391,18 +417,32 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     const serviceProviderPanelLoginData = new ServiceProviderPanelLogins({
                         active_status:1,
                         service_provider_mobile_number:service_provider_mobile_number,
-                        add_date: new Date()
+                        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
                     });
                     await serviceProviderPanelLoginData.save();
                     return res.status(200).json({
                         status_code:200,
                         message: "Service provider successfully login",
+                        message_hindi: "सेवा प्रदाता सफलतापूर्वक लॉगिन हुआ",
+                        message_urdu: "سروس فراہم کنندہ کامیابی سے لاگ ان ہو گیا",
+                        message_bengali: "সেবা প্রদানকারী সফলভাবে লগইন করেছেন",
+                        message_marathi: "सेवा प्रदाता यशस्वीरित्या लॉगिन झाला",
+                        message_malayalam: "സേവന ദാതാവ് വിജയകരമായി ലോഗിൻ ചെയ്തു",
+                        message_tamil: "சேவை வழங்குநர் வெற்றிகரமாக உள்நுழைந்தார்",
+                        message_telugu: "సేవా ప్రదాత విజయవంతంగా లాగిన్ అయ్యారు",
                         p_status: true
                     })
                 }else{
                     return res.status(200).json({
                         status_code:200,
                         message: "You are not in a serviceable area",
+                        message_hindi: "आप सेवा योग्य क्षेत्र में नहीं हैं",
+                        message_urdu: "آپ کسی سروس ایریا میں نہیں ہیں",
+                        message_bengali: "আপনি পরিষেবা এলাকায় নেই",
+                        message_marathi: "तुम्ही सेवा क्षेत्रात नाही",
+                        message_malayalam: "നിങ്ങൾ സേവന മേഖലയിൽ ഇല്ല",
+                        message_tamil: "நீங்கள் சேவைப் பகுதியில் இல்லை",
+                        message_telugu: "మీరు సేవా విభాగంలో లేరు",
                         p_status:false
                     })
                 }
@@ -413,7 +453,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
 
                 if(distanceWithBodyLatLongAndAdharLatLong <=40){
                     const newServiceProviderLatLongData = new service_provider_lat_long({
-                        add_date:new Date(),
+                        add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
                         mobile_number:service_provider_mobile_number,
                         latitude:new_latitude,
                         longitude: new_longitude,
@@ -436,19 +476,26 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     });
 
                     serviceProviderDataX.panel_login="1";
-                    serviceProviderDataX.last_panel_login= new Date();
+                    serviceProviderDataX.last_panel_login= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
                     await serviceProviderDataX.save();
 
                     const serviceProviderPanelLoginData = new ServiceProviderPanelLogins({
                         active_status:1,
                         service_provider_mobile_number:service_provider_mobile_number,
-                        add_date: new Date()
+                        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
                     });
                     await serviceProviderPanelLoginData.save();
                     return res.status(200).json({
                         status_code:200,
                         message: "Service provider successfully login",
+                        message_hindi: "सेवा प्रदाता सफलतापूर्वक लॉगिन हुआ",
+                        message_urdu: "سروس فراہم کنندہ کامیابی سے لاگ ان ہو گیا",
+                        message_bengali: "সেবা প্রদানকারী সফলভাবে লগইন করেছেন",
+                        message_marathi: "सेवा प्रदाता यशस्वीरित्या लॉगिन झाला",
+                        message_malayalam: "സേവന ദാതാവ് വിജയകരമായി ലോഗിൻ ചെയ്തു",
+                        message_tamil: "சேவை வழங்குநர் வெற்றிகரமாக உள்நுழைந்தார்",
+                        message_telugu: "సేవా ప్రదాత విజయవంతంగా లాగిన్ అయ్యారు",
                         p_status:true
                     })
 
@@ -456,6 +503,13 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     return res.status(200).json({
                         status_code: 200,
                         message: "You are not in a serviceable area.",
+                        message_hindi: "आप सेवा योग्य क्षेत्र में नहीं हैं",
+                        message_urdu: "آپ کسی سروس ایریا میں نہیں ہیں",
+                        message_bengali: "আপনি পরিষেবা এলাকায় নেই",
+                        message_marathi: "तुम्ही सेवा क्षेत्रात नाही",
+                        message_malayalam: "നിങ്ങൾ സേവന മേഖലയിൽ ഇല്ല",
+                        message_tamil: "நீங்கள் சேவைப் பகுதியில் இல்லை",
+                        message_telugu: "మీరు సేవా విభాగంలో లేరు",
                         p_status:false
                     })
                 }
@@ -483,6 +537,13 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
             return res.status(200).json({
                 status_code:200,
                 message: "Service Provider successfully Logout",
+                message_hindi: "सेवा प्रदाता सफलतापूर्वक लॉगआउट हुआ",
+                message_urdu: "سروس فراہم کنندہ کامیابی کے ساتھ لاگ آؤٹ ہوگیا",
+                message_bengali: "পরিষেবা প্রদানকারী সফলভাবে লগআউট করেছেন",
+                message_marathi: "सेवा प्रदाता यशस्वीरित्या लॉगआउट झाला",
+                message_malayalam: "സേവന ദാതാവ് വിജയകരമായി ലോഗൗട്ട് ചെയ്തു",
+                message_tamil: "சேவை வழங்குநர் வெற்றிகரமாக வெளியேறினார்",
+                message_telugu: "సేవా దాత విజయవంతంగా లాగ్ అవుట్ అయ్యారు",
                 p_status:false
             })
         }
@@ -520,11 +581,16 @@ async function buySubscriptionCheck(req,res){
         }).sort({addDate: -1 }).select("end_date");
 
         if(!serviceProviderSubscriptionData){
-            return res.status(400).json({status_code:400, message:"Service Provider Not found with mobile Number"});
+            return res.status(200).json({
+                status_code:200,
+                message: "Please Subscription Buy",
+                redirect: "buy-subscription"
+             }) 
+            // return res.status(400).json({status_code:400, message:"Service Provider Not found with mobile Number"});
         }
 
         const endDate = new Date(serviceProviderSubscriptionData.end_date);  // Your end_date from the database
-        const today = new Date();  // Current date and time
+        const today = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));  // Current date and time
 
 
         today.setHours(0, 0, 0, 0);
@@ -552,8 +618,8 @@ async function buySubscriptionCheck(req,res){
 async function serviceProviderBuySubscription(req,res){
     try {
         const service_provider_mobile_number= req.user.mobile;
-        const startDate= new Date();
-        const today = new Date();
+        const startDate= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+        const today = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
 
         today.setDate(today.getDate() + 30);
         const endDate = today;
@@ -561,7 +627,7 @@ async function serviceProviderBuySubscription(req,res){
             service_provider_mobile_number:service_provider_mobile_number,
             start_date:startDate,
             end_date:endDate,
-            add_date:new Date(),
+            add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
             order_id:"",
             payment_id: ""
         });
@@ -571,7 +637,7 @@ async function serviceProviderBuySubscription(req,res){
             service_provider_mobile_number:service_provider_mobile_number,
             start_date:startDate,
             end_date:endDate,
-            add_date:new Date(),
+            add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
             payment_id:"",
             order_id:""
         })

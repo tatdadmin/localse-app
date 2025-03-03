@@ -5,7 +5,8 @@ const customerDeletedServiceProviderSchema = new mongoose.Schema(
   {
     add_date: {
       type: Date,
-      default: Date.now, // Default to current timestamp if not provided
+      default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+      // default: Date.now, // Default to current timestamp if not provided
     },
     mobile_number: {
       type: String,
@@ -21,9 +22,14 @@ const customerDeletedServiceProviderSchema = new mongoose.Schema(
       maxlength: 10,
       trim: true, // Ensures no extra spaces are stored
     },
+    createdAt: {
+      type: Date,
+      default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+      immutable: true, // Prevents modification after creation
+    },
   },
   {
-    timestamps: true, // Mongoose will automatically manage createdAt and updatedAt fields
+    timestamps: false, // Mongoose will automatically manage createdAt and updatedAt fields
   }
 );
 

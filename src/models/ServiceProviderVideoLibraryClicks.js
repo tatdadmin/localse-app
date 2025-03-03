@@ -15,7 +15,13 @@ const serviceProviderVideoLibraryClicksSchema = new Schema(
     },
     add_date: {
       type: Date,
-      default: Date.now, // Default to the current timestamp when a new entry is created
+      default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+      // default: Date.now, // Default to the current timestamp when a new entry is created
+    },
+    createdAt: {
+      type: Date,
+      default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+      immutable: true, // Prevents modification after creation
     },
   },
   {

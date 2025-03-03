@@ -10,7 +10,7 @@ const serviceProviderSubscriptionSchema = new mongoose.Schema(
     },
     add_date: {
       type: Date,
-      default: Date.now
+      default: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
     },
     start_date: {
       type: Date,
@@ -29,10 +29,15 @@ const serviceProviderSubscriptionSchema = new mongoose.Schema(
       type: String,
     //   required: true,
       maxlength: 200
-    }
+    },
+    createdAt: {
+      type: Date,
+      default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+      immutable: true, // Prevents modification after creation
+    },
   },
   {
-    timestamps: true, // Automatically add createdAt and updatedAt fields
+    timestamps: false, // Automatically add createdAt and updatedAt fields
   }
 );
 

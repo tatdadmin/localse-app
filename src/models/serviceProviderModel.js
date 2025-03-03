@@ -9,6 +9,12 @@ const serviceProviderModelSchema = new mongoose.Schema(
     service_provider_name: { type: String,
       //  required: true
        },
+    service_provider_name_hindi: { type: String, default: "" },
+    service_provider_name_urdu: { type: String, default: "" },
+    service_provider_name_marathi: { type: String, default: "" },
+    service_provider_name_tamil: { type: String, default: "" },
+    service_provider_name_telugu: { type: String, default: "" },
+    service_provider_name_malayalam: { type: String, default: "" },
     service_provider_mobile_number: { type: String, required: true },
     language: { type: String, enum: ['Hindi', 'English'], required: true },
     service_provider_email: { type: String,
@@ -31,6 +37,13 @@ const serviceProviderModelSchema = new mongoose.Schema(
     aadhaar_address: { type: String,
       //  required: true
        },
+    aadhaar_address_hindi: { type: String, default: "" },
+    aadhaar_address_urdu: { type: String, default: "" },
+    aadhaar_address_marathi: { type: String, default: "" },
+    aadhaar_address_tamil: { type: String, default: "" },
+    aadhaar_address_telugu: { type: String, default: "" },
+    aadhaar_address_malayalam: { type: String, default: "" },
+
     current_latlong: { type: String, 
       // required: true
      },
@@ -48,8 +61,13 @@ const serviceProviderModelSchema = new mongoose.Schema(
     last_panel_login: { type: Date,
       //  default: "0000-00-00 00:00:00"
        },
+       createdAt: {
+        type: Date,
+        default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+        immutable: true, // Prevents modification after creation
+      },
   },
-  { timestamps: true }
+  { timestamps: false}
 );
 
 module.exports = mongoose.model("ServiceProviderModel", serviceProviderModelSchema,"service_provider");

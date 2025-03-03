@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const appLoginAttemptSchema = new mongoose.Schema({
   mobile: { type: String, required: true, length: 10 },
   otp: { type: String, required: false, length: 4 }, 
-  created_at: { type: Date, default: Date.now },
+  created_at: { type: Date,
+    
+    default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+    //  default: Date.now
+     },
   expires_at: { type: Date, required: true },
   login_status: { type: Number, default: 0 },
   IpAddress: { type: String, required: true },

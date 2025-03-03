@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
 const AadharVerificationSchema = new mongoose.Schema({
-    add_date: { type: Date, default: Date.now },
+    add_date: { type: Date,
+        default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+        //  default: Date.now
+         },
     mobile_number: { type: String, required: false },
     aadhaar_number: { type: String, required: true },
     ad_client_id: { type: String, required: true },

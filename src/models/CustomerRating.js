@@ -30,12 +30,18 @@ const customerRatingsSchema = new Schema({
   add_date: {
     type: Date,
     required: true,
-    default: Date.now  // Will default to current date if not specified
+    default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+    // default: Date.now  // Will default to current date if not specified
   },
   update_date: {
     type: Date,
     default: null  // Set to null if no update date is provided
-  }
+  },
+  createdAt: {
+    type: Date,
+    default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+    immutable: true, // Prevents modification after creation
+  },
 }, {
   timestamps: false  // No automatic `createdAt` / `updatedAt` fields in MongoDB
 });

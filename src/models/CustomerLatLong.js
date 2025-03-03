@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const CustomerLatLongSchema = new Schema({
   add_date: {
     type: Date,
-    default: Date.now,  // Default to the current date and time if not provided
+    default: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+    // default: Date.now,  // Default to the current date and time if not provided
   },
   mobile_number: {
     type: String,
@@ -32,6 +33,12 @@ const CustomerLatLongSchema = new Schema({
     required: true,
     maxlength: 100,  // You can adjust this length as needed
   },
+  createdAt: {
+    type: Date,
+    default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
+    immutable: true, // Prevents modification after creation
+  },
+
 });
 
 // Model for Customer LatLong

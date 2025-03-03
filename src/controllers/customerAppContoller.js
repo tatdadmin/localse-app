@@ -45,8 +45,8 @@ async function handleVerifyOtp(req, res) {
   const { mobile, otp, deviceOS, current_app_version } = req.body;
   const user_type = "Customer";
   const db_user= "Customer";
-  const expires_at = moment().utc().toDate();
-  const currentTime = moment().utc().startOf("second"); // Strip milliseconds from current time
+  const expires_at =  new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)// moment().utc().toDate();
+  const currentTime =  new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)//moment().utc().startOf("second"); // Strip milliseconds from current time
 
   if (!mobile || !otp) {
     return res
@@ -60,7 +60,7 @@ async function handleVerifyOtp(req, res) {
       otp,
       user_type,
       db_user,
-      expires_at: { $gt: currentTime.toDate() },
+      expires_at: { $gt: currentTime },
     }).sort({ created_at: -1 });
 
     if (!loginAttempt) {
@@ -72,7 +72,7 @@ async function handleVerifyOtp(req, res) {
     const loginExistOfUser = await Login.findOne({ mobile_number: mobile,page_url: "Customer Login" });
     let newLogin;
     if (loginExistOfUser) {
-      loginExistOfUser.login_time = moment().utc().toDate();
+      loginExistOfUser.login_time = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
       await loginExistOfUser.save();
       newLogin = loginExistOfUser;
     } else {
@@ -80,7 +80,7 @@ async function handleVerifyOtp(req, res) {
         mobile_number: mobile,
         page_url: "Customer Login",
         // user_type: user_type,
-        login_time: moment().utc().toDate(),
+        login_time: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
       };
 
       newLogin = new Login(loginData);
@@ -95,9 +95,9 @@ async function handleVerifyOtp(req, res) {
     const customerRefExp = customerRefreshTokenExp * 24 * 60 * 60;
 
     const refresh_token = await generateJWT(newLogin, customerRefExp);
-    const refresh_token_expiry = moment()
-      .add(customerRefreshTokenExp, "days")
-      .toDate();
+    let expiresAt2 = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000); // IST offset
+    expiresAt2.setDate(expiresAt2.getDate() + 30); // Add 30 days
+    const refresh_token_expiry = expiresAt2;
 
     // Check if the mobile number already exists in app_refresh_tokens
     let appRefreshToken = await RefreshToken.findOne({
@@ -197,8 +197,10 @@ async function handleLoginAttempt(req, res) {
   }
 
   const otp = generateOTP(); // Generate OTP
-  const expires_at = moment().utc().add(10, "minutes").toDate(); //.format('YYYY-MM-DD HH:mm:ss'); // OTP valid for 10 minutes
-  const current_time = moment().utc().toDate(); //.format('YYYY-MM-DD HH:mm:ss');
+    const expiresAt = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
+    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
+  const expires_at =  expiresAt// moment().utc().add(10, "minutes").toDate(); //.format('YYYY-MM-DD HH:mm:ss'); // OTP valid for 10 minutes
+  const current_time =  new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000); //.format('YYYY-MM-DD HH:mm:ss');
   const user_type = "Customer";
   const db_user = "Customer"; // This can be dynamic if needed
 
@@ -224,6 +226,7 @@ async function handleLoginAttempt(req, res) {
     } else {
       // No valid OTP exists, insert a new record
       const newLoginAttempt = new AppLoginAttempt({
+        created_at: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
         mobile,
         otp,
         expires_at,
@@ -334,9 +337,11 @@ async function handleCustomerCurrentAddress(req, res) {
     //       message: "Customer lat-long information updated successfully",
     //     });
     // } else {
+
+    const currentIST = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
       const newCustomerLatLong = new CustomerLatLong({
         mobile_number: mobileNumber,
-        add_date: new Date(),
+        add_date: currentIST,
         latitude,
         longitude,
         place_id,
@@ -458,6 +463,7 @@ async function saveUserAppDeviceInfo(req, res) {
       existingDevice.buildNumber = buildNumber || existingDevice.buildNumber;
       // existingDevice.isTablet = isTablet || existingDevice.isTablet;
       existingDevice.isTablet = isTablet || existingDevice.isTablet;
+      existingDevice.updatedAt= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
       // Save the updated device information
       await existingDevice.save();
@@ -469,6 +475,7 @@ async function saveUserAppDeviceInfo(req, res) {
     } else {
       // If the device does not exist, create a new one
       const newDevice = new AppDevice({
+        add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
         mobile_number: mobileNumber,
         user_type: userType,
         manufacturer: manufacturer || "",
@@ -530,7 +537,10 @@ async function getServiceTypeFromServiceProvide(req, res) {
         const existingCustomerLongitude = parseFloat(
           existingCustomerLatLong.longitude
         );
-        const serviceProviders = await serviceProviderModel.find({});
+        const serviceProviders = await serviceProviderModel.find({
+          active_status: "1",
+          panel_login: "1"
+        });
 
         const nearbyServiceProviders = serviceProviders
           .filter((provider) => {
@@ -549,9 +559,10 @@ async function getServiceTypeFromServiceProvide(req, res) {
           .map((provider) => provider.service_type);
 
         const distinctServices = [...new Set(nearbyServiceProviders)];
+        const finalDistinctServices= await filterDistinctServices(mobileNumber,distinctServices);
         return res
           .status(200)
-          .json({ status_code: 200, data: distinctServices,
+          .json({ status_code: 200, data: finalDistinctServices,
               address:existingCustomerLatLong.address,
               CustomerLatLongData: `${existingCustomerLattitude},${existingCustomerLongitude}`
            });
@@ -562,6 +573,78 @@ async function getServiceTypeFromServiceProvide(req, res) {
     return res.status(500).json({ message: "Internal server error" });
   }
 }
+async function filterDistinctServices(mobileNumber, distinctServices) {
+  try {
+    const filteredServices = [];
+
+    for (const serviceType of distinctServices) {
+      const filteredData = await getServiceProviderListDataBasedOnServicesType(mobileNumber, serviceType);
+      
+      if (filteredData.length > 0) {
+        filteredServices.push(serviceType);
+      }
+    }
+
+    return filteredServices;
+  } catch (error) {
+    console.error("Error filtering distinct services:", error);
+    return distinctServices;
+  }
+}
+
+
+async function getServiceProviderListDataBasedOnServicesType(mobileNumber, serviceType) {
+  try {
+    if (!serviceType) return []; // Return empty if serviceType is missing
+
+    const existingCustomerLatLong = await CustomerLatLong.findOne({
+      mobile_number: mobileNumber,
+    }).sort({ add_date: -1 });
+
+    if (!existingCustomerLatLong || !existingCustomerLatLong.latitude || !existingCustomerLatLong.longitude) {
+      return await serviceProviderModel.find({
+        service_type: { $regex: new RegExp(serviceType, 'i') },
+        active_status: "1",
+        panel_login: "1"
+      });
+    }
+
+    const serviceProviders = await serviceProviderModel.find({
+      service_type: { $regex: new RegExp(serviceType, 'i') },
+      active_status: "1",
+      panel_login: "1"
+    });
+
+    const customerLat = parseFloat(existingCustomerLatLong.latitude);
+    const customerLon = parseFloat(existingCustomerLatLong.longitude);
+
+    const nearbyServiceProviders = serviceProviders
+      .map(provider => {
+        const [providerLat, providerLon] = provider.current_latlong.split(",").map(Number);
+        provider.distance = calculateDistance(customerLat, customerLon, providerLat, providerLon);
+        return provider;
+      })
+      .filter(provider => provider.distance <= AllowedSearchServiceProviders)
+      .sort((a, b) => a.distance - b.distance);
+
+    let newJson = nearbyServiceProviders.map(provider => ({
+      ...provider.toObject(),
+      distance: provider.distance,
+      service_provider_address: provider.aadhaar_address,
+      service_provider_img_src: provider.service_provider_image,
+    }));
+
+    const deletedData = await CustomerDeletedServiceProvider.find({ mobile_number: mobileNumber });
+    const deletedServiceProviders = deletedData.map(item => item.service_provider_mobile_number);
+
+    const filteredData = newJson.filter(item => !deletedServiceProviders.includes(item.service_provider_mobile_number));
+    return filteredData;
+  } catch (error) {
+    console.error("Error fetching service providers:", error);
+    return [];
+  }
+}
+
 // function to find distance bw 2 latlong addresses
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Radius of the Earth in km
@@ -668,7 +751,10 @@ async function filterSearchServiceTypeApi(req, res) {
       const existingCustomerLongitude = parseFloat(
         existingCustomerLatLong.longitude
       );
-      const serviceProviders = await serviceProviderModel.find({});
+      const serviceProviders = await serviceProviderModel.find({
+          active_status: "1",
+          panel_login: "1"
+      });
       const nearbyServiceProviders = serviceProviders
         .filter((provider) => {
           const [providerLatitude, providerLongitude] = provider.current_latlong
@@ -714,7 +800,7 @@ async function getServiceProviderListBasedOnServicesType(req,res){
     const serviceType= req.query.service_type;
     if(!serviceType){
       return res.status(404).json({
-        message: "service_provider not given in param",
+        message: "service_type not given in param",
         status:404
       })
     }
@@ -734,7 +820,10 @@ async function getServiceProviderListBasedOnServicesType(req,res){
       existingCustomerLatLong.longitude == ""
     ){
       const serviceProviders = await serviceProviderModel.find({
-        service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        // service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        service_type: { $regex: new RegExp(serviceType, 'i') },
+        active_status:"1",
+        panel_login: "1"
       });
 
       return res.status(200).json(
@@ -747,10 +836,11 @@ async function getServiceProviderListBasedOnServicesType(req,res){
     }
     else{
       const serviceProviders = await serviceProviderModel.find({
-        service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        // service_type: { $regex: new RegExp(`^${serviceType}$`, 'i') }
+        service_type: { $regex: new RegExp(serviceType, 'i') },
+        active_status:"1",
+        panel_login: "1"
       });
-
-
       const existingCustomerLattitude = parseFloat(
         existingCustomerLatLong.latitude
       );
@@ -855,7 +945,7 @@ async function insertRatingToServiceProvider(req,res){
         service_provider_number: serviceProvider.service_provider_mobile_number,
         rating: parseFloat(rating),
         remarks: remarks || '',
-        add_date: new Date()
+        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
       });
       await newRating.save();
       const avgRatingOfProvider= await getAverageRatingOfServiceProvider(serviceProvider.service_provider_mobile_number);
@@ -869,7 +959,7 @@ async function insertRatingToServiceProvider(req,res){
     else{
       existingCustomerRatingToServiceProvider.rating= parseFloat(rating);
       existingCustomerRatingToServiceProvider.remarks= remarks || "";
-      existingCustomerRatingToServiceProvider.update_date= new Date();
+      existingCustomerRatingToServiceProvider.update_date= new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
       await existingCustomerRatingToServiceProvider.save();
 
       const avgRatingOfProvider= await getAverageRatingOfServiceProvider(serviceProvider.service_provider_mobile_number);
@@ -961,7 +1051,7 @@ async function serviceProviderDelete(req,res){
      const CustomerData = new CustomerDeletedServiceProvider({
       mobile_number:customer_number,
       service_provider_mobile_number: serviceProvider.service_provider_mobile_number,
-      add_date: new Date()
+      add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
      }) ;
 
      await CustomerData.save();
@@ -1002,11 +1092,11 @@ async function HandleStoreClick(req,res){
     const existingCustomerServicesClicks = await CustomerServicesClicks.findOne({
       customer_mobile_number:customer_number,
       service_provider_mobile_number:serviceProvider.service_provider_mobile_number,
-      add_date: new Date()
+      add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
     })
     if(!existingCustomerServicesClicks){
       const newCustomerServiceClickData= new CustomerServicesClicks({
-        add_date: new Date(),
+        add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
         customer_mobile_number:customer_number,
         service_provider_mobile_number:serviceProvider.service_provider_mobile_number,
         service_type:serviceProvider.service_type,
@@ -1076,6 +1166,7 @@ async function customerLatLongHit(req,res){
 
     const newCustomerData= new CustomerLatLongHit({
       mobile_number:customer_number,
+      add_date: new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000),
       latitude,
       longitude,
       place_id,
