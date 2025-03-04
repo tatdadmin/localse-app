@@ -1223,11 +1223,15 @@ async function getRecentClickedServiceProvider(req,res){
     const serviceProvidersData = await serviceProviderModel.find({
       service_provider_mobile_number: { $in: mobileNumbers }
     }).lean();
+
+    const sortedServiceProviders = mobileNumbers.map(mobile => 
+      serviceProvidersData.find(provider => provider.service_provider_mobile_number === mobile)
+    ).filter(Boolean);
   
     return res.status(200).json({
       status_code:200,
       message:"data for recent Clicked service providers retrieved successfully",
-      data:serviceProvidersData
+      data:sortedServiceProviders
     })
   
   } catch (error) {
