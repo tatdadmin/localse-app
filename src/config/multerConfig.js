@@ -15,4 +15,18 @@ const upload = multer({
   }),
 });
 
-module.exports = upload;
+const uploadServiceProvider = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: (req, file, cb) => {
+      cb(null, `service_provider/${Date.now()}-${file.originalname}`);
+    },
+  }),
+});
+
+
+module.exports = {upload,uploadServiceProvider};
