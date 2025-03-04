@@ -237,7 +237,6 @@ exports.saveServicePartnerRegistrationUpdated = async(req,res)=>{
     
 
     const { service_provider_mobile_number, service_type, service_area, service_provider_aadhar_number, service_provider_manual_address } = req.body;
-    console.log("line 240",req.body);
     if(!service_provider_mobile_number || !service_type || !service_area || !service_provider_aadhar_number || !service_provider_manual_address){
       return res.status(400).json({
         status_code:400,
