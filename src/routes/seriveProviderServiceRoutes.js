@@ -28,7 +28,9 @@ router.post('/create-service', serviceProviderService.addServiceProviderService)
 router.get('/registration/get_service_type_api', serviceProviderService.getServiceProviderServices);
 router.get('/registration/get_localse_services_for_registration', serviceProviderService.searchServiceProviderService);
 
-router.post("/registration/save-service-partner-registration",upload.single('service_provider_image')
+router.post("/registration/save-service-partner-registration",serviceProviderService.uploadServiceProviderImage,serviceProviderService.saveServicePartnerRegistrationUpdated)
+// oldRoute in which image was saving in uploads/service_providers folder
+router.post("/registration/save-service-partner-registration-old",upload.single('service_provider_image')
 ,serviceProviderService.saveServicePartnerRegistration);
 // need to work upon
 router.get("/registration/get_service_localities-api",serviceProviderService.getServiceLocalities);

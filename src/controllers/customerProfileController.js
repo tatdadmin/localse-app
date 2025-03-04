@@ -1,5 +1,5 @@
 const CustomerProfile = require("../models/customerProfileModel");
-const upload = require("../config/multerConfig");
+const {upload} = require("../config/multerConfig");
 
 exports.uploadProfileImage = upload.single("image");
 
