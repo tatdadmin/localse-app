@@ -21,7 +21,8 @@ const RefreshToken = require("../models/AppRefreshToken");
 const Login = require("../models/Login");
 const AppLoginAttempt = require("../models/AppLoginAttempt");
 const CustomerLatLongHit = require("../models/CustomerLatLongHit");
-const CustomerProfile = require("../models/customerProfileModel")
+const CustomerProfile = require("../models/customerProfileModel");
+const CustomerRemovedRecentServiceProvider = require("../models/CustomerRemovedRecentServiceProvider");
 require("dotenv").config();
 
 async function generateJWT(user, timeInSecond) {
@@ -1086,6 +1087,52 @@ async function serviceProviderDelete(req,res){
       .json({ status_code: 500, message: "Internal server error" });
   }
 }
+async function HandleRemoveRecentServiceProvider(req,res){
+  try {
+    const customer_number = req.user.mobile_number;
+    const {service_provider_id} = req.body;
+    if(!service_provider_id){
+      return res.status(400).json({
+        status_code:400,
+        message:"service_provider_id is missing"
+      })
+    }
+    const serviceProvider = await serviceProviderModel.findOne({ _id: service_provider_id });
+    if (!serviceProvider) {
+      return res.status(404).json({ message: 'Service provider not found' });
+    }
+
+    const existingServiceProviderRemovedData= await CustomerRemovedRecentServiceProvider.findOne({
+      mobile_number:customer_number,
+      service_provider_mobile_number:serviceProvider.service_provider_mobile_number
+    });
+
+    if(!existingServiceProviderRemovedData){
+      const newData= new CustomerRemovedRecentServiceProvider({
+        mobile_number:customer_number,
+        service_provider_mobile_number: serviceProvider.service_provider_mobile_number,
+        add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+      });
+
+      await newData.save();
+      return res.status(200).json({
+        message:"Data for Customer Removed Service Provider from Recent Was Added",
+        status_code:200
+      })
+    }else{
+      return res.status(400).json({
+        message:"Data was Already Deleted",
+        status_code:400
+      })
+    }
+
+  } catch (error) {
+    console.error("Error in Removing Recent Service Provider", error);
+    return res
+      .status(500)
+      .json({ status_code: 500, message: "Internal server error" });
+  }
+}
 
 async function HandleStoreClick(req,res){
   try {
@@ -1114,6 +1161,13 @@ async function HandleStoreClick(req,res){
         click_on:click_on
       });
       await newCustomerServiceClickData.save();
+      // just delete the data from this table as well if i click on call or whatsapp
+
+      CustomerRemovedRecentServiceProvider.deleteOne({
+        mobile_number: customer_number,
+        service_provider_mobile_number: serviceProvider.service_provider_mobile_number
+      }).catch(err => console.error("Error deleting record:", err)); // Handle errors
+  
       return res.status(200).json({
         status_code:200,
         message:"Click Saved successfully"
@@ -1214,24 +1268,34 @@ async function getRecentClickedServiceProvider(req,res){
         }
       },
       { $sort: { latestAddDate: -1 } },
-      { $limit: 20 },
+      // { $limit: 20 },
       { $project: { _id: 0, service_provider_mobile_number: "$_id" } } 
     ]);
-    
+
     const mobileNumbers = serviceProviderNumbers.map(sp => sp.service_provider_mobile_number);
-  
+    const serviceProviderFromRemovedRecent = await CustomerRemovedRecentServiceProvider.find({
+      mobile_number:customer_number
+    }).select("service_provider_mobile_number");
+
+    const removedServiceProviderMobile= serviceProviderFromRemovedRecent.map(sp=>sp.service_provider_mobile_number);
+
+    const filteredMobileNumbers = mobileNumbers.filter(
+      num => !removedServiceProviderMobile.includes(num)
+    );
     const serviceProvidersData = await serviceProviderModel.find({
-      service_provider_mobile_number: { $in: mobileNumbers }
+      service_provider_mobile_number: { $in: filteredMobileNumbers }
     }).lean();
 
-    const sortedServiceProviders = mobileNumbers.map(mobile => 
+    const sortedServiceProviders = filteredMobileNumbers.map(mobile => 
       serviceProvidersData.find(provider => provider.service_provider_mobile_number === mobile)
     ).filter(Boolean);
+
+    const top20ServiceProviders = sortedServiceProviders.slice(0, 20);
   
     return res.status(200).json({
       status_code:200,
       message:"data for recent Clicked service providers retrieved successfully",
-      data:sortedServiceProviders
+      data:top20ServiceProviders
     })
   
   } catch (error) {
@@ -1259,5 +1323,6 @@ module.exports = {
   HandleStoreClick,
   getAppVersionInfo,
   customerLatLongHit,
-  getRecentClickedServiceProvider
+  getRecentClickedServiceProvider,
+  HandleRemoveRecentServiceProvider
 };
