@@ -557,7 +557,7 @@ async function getServiceTypeFromServiceProvide(req, res) {
         const nearbyServiceProviders = serviceProviders
           .filter((provider) => {
             const [providerLatitude, providerLongitude] =
-              provider.current_latlong
+              provider.aadhaar_address_latlong
                 .split(",")
                 .map((coord) => parseFloat(coord));
             const distance = calculateDistance(
@@ -632,7 +632,7 @@ async function getServiceProviderListDataBasedOnServicesType(mobileNumber, servi
 
     const nearbyServiceProviders = serviceProviders
       .map(provider => {
-        const [providerLat, providerLon] = provider.current_latlong.split(",").map(Number);
+        const [providerLat, providerLon] = provider.aadhaar_address_latlong.split(",").map(Number);
         provider.distance = calculateDistance(customerLat, customerLon, providerLat, providerLon);
         return provider;
       })
@@ -769,7 +769,7 @@ async function filterSearchServiceTypeApi(req, res) {
       });
       const nearbyServiceProviders = serviceProviders
         .filter((provider) => {
-          const [providerLatitude, providerLongitude] = provider.current_latlong
+          const [providerLatitude, providerLongitude] = provider.aadhaar_address_latlong
             .split(",")
             .map((coord) => parseFloat(coord));
           const distance = calculateDistance(
@@ -865,7 +865,7 @@ async function getServiceProviderListBasedOnServicesType(req,res){
       const nearbyServiceProviders = serviceProviders
           .map((provider) => {
             // Split the provider's latlong and parse them into floats
-            const [providerLatitude, providerLongitude] = provider.current_latlong
+            const [providerLatitude, providerLongitude] = provider.aadhaar_address_latlong
               .split(",")
               .map((coord) => parseFloat(coord));
 
@@ -889,7 +889,7 @@ async function getServiceProviderListBasedOnServicesType(req,res){
             const plainProvider = provider.toObject ? provider.toObject() : provider; // Ensures we're working with a plain object
             
             // Extract the current latlong of the service provider
-            const [providerLat, providerLon] = plainProvider.current_latlong.split(',').map(Number);
+            const [providerLat, providerLon] = plainProvider.aadhaar_address_latlong.split(',').map(Number);
           
             // Calculate the distance between the customer and the service provider
             const distance = calculateDistance(existingCustomerLattitude, existingCustomerLongitude, providerLat, providerLon);
