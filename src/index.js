@@ -49,6 +49,7 @@ const bodyParser = require('body-parser');
 // Connect to MongoDB
 connectDB();
 const path = require('path');
+const runServiceProviderCron = require("./cronJob/serviceProviderCron");
 // Middleware
 app.use(express.json());
 // app.use(express.json()); // For parsing application/json
@@ -78,6 +79,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to on Local Se Home Page");
 });
 
+runServiceProviderCron();
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on :${PORT}`);
