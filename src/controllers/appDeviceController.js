@@ -24,6 +24,7 @@ exports.createDevice = async (req, res) => {
       const newDeviceData = {
         ...req.body, // All other fields from the request body
         mobile_number, // Mobile number from the token
+        user_type: "Service Provider",
         add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)), // Set add_date to current date
       };
   
