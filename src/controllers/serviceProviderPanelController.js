@@ -10,7 +10,9 @@ const service_provider_lat_long = require("../models/service_provider_lat_long")
 const ServiceProviderPanelLogins = require("../models/ServiceProviderPanelLogins");
 const ServiceProviderSubscriptionValidation = require("../models/ServiceProviderSubscriptionValidation");
 const ServiceProviderSubscription = require("../models/ServiceProviderSubscription");
-
+const ServiceProviderPanelLoginDistanceRecord = require("../models/ServiceProviderPanelLoginDistanceRecord");
+const ServiceProviderFailedPanelLogin = require("../models/ServiceProviderFailedPanelLogin");
+require("dotenv").config();
 
 async function hanldeServiceProviderNotice(req,res){
     try {
@@ -397,8 +399,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
 
                 // now we need to calculate difference of distance addhar latlong and last latlong 
                 const distanceDifference= calculateDistance(adharLat,adharLong,lastLat,lastLong);
-                // console.log("line 367",distanceDifference);
-                if(distanceDifference <=40 ){
+                if(distanceDifference <= process.env.ALLOWED_PANEL_LOGIN_DISTANCE ){
 
                     // update service_provider table panel_login as 1 and last_panel_login should be added as Date
                     const result = await  serviceProviderModel.findOne({
@@ -420,6 +421,14 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                         add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
                     });
                     await serviceProviderPanelLoginData.save();
+                    const serviceProviderPanelLoginDistanceRecord= new ServiceProviderPanelLoginDistanceRecord({
+                        service_provider_mobile_number:service_provider_mobile_number,
+                        aadhaar_lat_long: `${adharLat},${adharLong}`,
+                        current_lat_long: `${lastLat},${lastLong}`,
+                        panel_login_distance_from_aadhaar : distanceDifference
+
+                    });
+                    await serviceProviderPanelLoginDistanceRecord.save();
                     return res.status(200).json({
                         status_code:200,
                         message: "Service provider successfully login",
@@ -433,6 +442,13 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                         p_status: true
                     })
                 }else{
+                    const serviceProviderFailedPanelLoginData= new ServiceProviderFailedPanelLogin({
+                        service_provider_mobile_number:service_provider_mobile_number,
+                        aadhaar_lat_long: `${adharLat},${adharLong}`,
+                        current_lat_long: `${lastLat},${lastLong}`,
+                        panel_login_distance_from_aadhaar : distanceDifference
+                    });
+                    await serviceProviderFailedPanelLoginData.save();
                     return res.status(200).json({
                         status_code:200,
                         message: "You are not in a serviceable area",
@@ -451,7 +467,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
     // calculate distance with adharLatLong and requestBody latlongie new_latitude, new_longitude
                 const distanceWithBodyLatLongAndAdharLatLong = calculateDistance(adharLat,adharLong,new_latitude,new_longitude);
 
-                if(distanceWithBodyLatLongAndAdharLatLong <=40){
+                if(distanceWithBodyLatLongAndAdharLatLong <= process.env.ALLOWED_PANEL_LOGIN_DISTANCE){
                     const newServiceProviderLatLongData = new service_provider_lat_long({
                         add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
                         mobile_number:service_provider_mobile_number,
@@ -486,6 +502,14 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                         add_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
                     });
                     await serviceProviderPanelLoginData.save();
+                    const serviceProviderPanelLoginDistanceRecord= new ServiceProviderPanelLoginDistanceRecord({
+                        service_provider_mobile_number:service_provider_mobile_number,
+                        aadhaar_lat_long: `${adharLat},${adharLong}`,
+                        current_lat_long: `${new_latitude},${new_longitude}`,
+                        panel_login_distance_from_aadhaar : distanceWithBodyLatLongAndAdharLatLong
+
+                    });
+                    await serviceProviderPanelLoginDistanceRecord.save();
                     return res.status(200).json({
                         status_code:200,
                         message: "Service provider successfully login",
@@ -500,6 +524,13 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                     })
 
                 }else{
+                    const serviceProviderFailedPanelLoginData= new ServiceProviderFailedPanelLogin({
+                        service_provider_mobile_number:service_provider_mobile_number,
+                        aadhaar_lat_long: `${adharLat},${adharLong}`,
+                        current_lat_long: `${lastLat},${lastLong}`,
+                        panel_login_distance_from_aadhaar : distanceWithBodyLatLongAndAdharLatLong
+                    });
+                    await serviceProviderFailedPanelLoginData.save();
                     return res.status(200).json({
                         status_code: 200,
                         message: "You are not in a serviceable area.",
