@@ -87,6 +87,7 @@ async function getAgentInfo(req,res){
                 message:"Data for Agent Info Retrieved Successfully",
                 data:{
                     agent_name:existingAgent.service_provider_name,
+                    agent_image:existingAgent.service_provider_image,
                     agent_address: existingAgent.aadhaar_address,
                     agent_rating: existingAgent.agent_rating ? existingAgent.agent_rating : "4.0",
                     leads_added:"0",
@@ -102,6 +103,7 @@ async function getAgentInfo(req,res){
                 message:"Data for Agent Info Retrieved Successfully",
                 data:{
                     agent_name:existingAgent.service_provider_name,
+                    agent_image:existingAgent.service_provider_image,
                     agent_address: existingAgent.aadhaar_address,
                     agent_rating: existingAgent.agent_rating ? existingAgent.agent_rating : "4.0",
                     leads_added:agentLeadsAddedCount,
