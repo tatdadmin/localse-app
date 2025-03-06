@@ -1,5 +1,5 @@
 const express = require('express');
-const { addLead, getAgentInfo, getLeadsByAgentNumber, getRegisteredServiceProviderByAgentNumber, getAllLeadsRegisteredByAgentNumber, serviceProviderCreateOTP, serviceProviderVerifyOTP, sendAadhaarOTPServiceProvider, verifyAadhaarOTPServiceProvider } = require('../controllers/agentPanelController');
+const { addLead, getAgentInfo, getLeadsByAgentNumber, getRegisteredServiceProviderByAgentNumber, getAllLeadsRegisteredByAgentNumber, serviceProviderCreateOTP, serviceProviderVerifyOTP, sendAadhaarOTPServiceProvider, verifyAadhaarOTPServiceProvider, uploadImageToAWS, serviceProviderRegistrationByAgentPanel, addServiceProviderLatLongByAgentPanel } = require('../controllers/agentPanelController');
 const authenticateAgentJWT = require('../middlewares/agentAuth');
 
 const router = express.Router();
@@ -14,8 +14,9 @@ router.get("/get-all-leads-registered",authenticateAgentJWT,getAllLeadsRegistere
 //for registring new service provider through agent_panel
 router.post("/service-provider/create-otp",authenticateAgentJWT,serviceProviderCreateOTP);
 router.post("/service-provider/verify-otp",authenticateAgentJWT,serviceProviderVerifyOTP);
-
+router.post("/service-provider/save-lat-long",authenticateAgentJWT,addServiceProviderLatLongByAgentPanel)
 router.post("/send-otp-aadhaar",authenticateAgentJWT,sendAadhaarOTPServiceProvider);
 router.post("/verify-otp-aadhaar",authenticateAgentJWT,verifyAadhaarOTPServiceProvider)
+router.post("/registration-service-provider",authenticateAgentJWT,uploadImageToAWS,serviceProviderRegistrationByAgentPanel)
 
 module.exports = router;
