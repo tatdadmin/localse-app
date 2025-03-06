@@ -65,7 +65,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //for Customer api routes
 app.use('/api/customer', customerAppRoutes);
 app.use('/api/admin_panel',adminPanelRoute);
-app.use('/api/agent_panel',agnentPanelRoute);
+app.use('/api/service_provider/agent_panel',agnentPanelRoute);
 
 //for service provider routes
 app.use("/api/service_provider",authRoutes);
