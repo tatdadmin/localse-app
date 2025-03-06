@@ -14,6 +14,7 @@ const serviceProviderAadharVerification = require("../models/serviceProviderAadh
 const service_provider_lat_long = require("../models/service_provider_lat_long");
 const ServiceProviderNotifications = require("../models/ServiceProviderNotifications");
 const ServiceProviderLatLong = require("../models/service_provider_lat_long");
+const AgentConversion = require("../models/AgentConversion");
 
 async function addLead(req,res){
     try {
@@ -848,12 +849,36 @@ async function serviceProviderRegistrationByAgentPanel(req,res){
             agent_number:agentMobileNumber,
             service_provider_mobile_number: mobile
           }).sort({ add_date: -1 });
-          
-          
+
+          if(!agentLeadData){
+            return res.status(400).json({
+              status_code:400,
+              message:"Agent Lead Data doesnot Exist for Agent Number and Service Provider Number"
+            })
+          }
+
           if(agentLeadData){
             againServiceProviderData.agent_number= agentLeadData.agent_number;
-            agentLeadData.registered= 1;
+            agentLeadData.status_id="1";
+            agentLeadData.status="Registered";
+            agentLeadData.updated_at=new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
             await agentLeadData.save();
+
+            const agentConversionData= new AgentConversion({
+              agent_name:agentLeadData.agent_name,
+              agent_number:agentLeadData.agent_number,
+              service_provider_mobile_number:agentLeadData.service_provider_mobile_number,
+              service_provider_name:fullName,
+              amount_received: 100,
+              commission_layer: "Agent Creation",
+              commission_percent: 20,
+              commission_value: 20,
+
+              payment_status: "Due",
+              payment_status_date: new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000))
+            });
+
+            await agentConversionData.save();
           }
   
   

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const agentConversionSchema = new mongoose.Schema({
-    add_date: { type: Date, default: Date.now },
+    add_date: { type: Date, default:  () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)},
     agent_name: { type: String, required: true },
     agent_number: { type: String, required: true },
     service_provider_name: { type: String, required: true },
