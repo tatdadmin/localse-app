@@ -12,6 +12,7 @@ const aadharOpt = require("./routes/aadhaarRoutes")
 const customerAppRoutes = require("./routes/customerAppRoute"); // Import routes from mobileOTP.js
 const serviceProviderPanelRoute = require("./routes/serviceProviderPanelRoute");
 const adminPanelRoute= require("./routes/adminPanelRoutes");
+const agnentPanelRoute= require("./routes/agentPanelRoutes");
 
 
 const app = express();
@@ -63,7 +64,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //for Customer api routes
 app.use('/api/customer', customerAppRoutes);
-app.use('/api/admin_panel',adminPanelRoute)
+app.use('/api/admin_panel',adminPanelRoute);
+app.use('/api/agent_panel',agnentPanelRoute);
 
 //for service provider routes
 app.use("/api/service_provider",authRoutes);

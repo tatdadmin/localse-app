@@ -24,6 +24,7 @@ const serviceProviderModelSchema = new mongoose.Schema(
       // required: true
      },
     rating: { type: Number, default: 4.0 },
+    agent_rating:{type:Number,default:4.5},
     service_provider_aadhar_number: { type: String, required: true },
     service_provider_image: { type: String, 
       // required: true

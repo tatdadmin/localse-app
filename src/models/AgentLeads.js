@@ -1,32 +1,33 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const agentLeadsSchema = new mongoose.Schema(
-  {
-    add_date: { 
-      type: Date, 
-      default: Date.now 
+const agentLeadSchema = new mongoose.Schema({
+    add_date: {
+      type: Date,
+      default: () => new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000), // Setting default time in IST
     },
-    agent_number: { 
-      type: String, 
-      required: true 
+    agent_name: { type: String, required: true },
+    agent_number: { type: String, required: true },
+    service_provider_mobile_number: {
+      type: String,
+      required: true,
+      minlength: 10,
+      maxlength: 10,
+      trim: true, // Ensures no extra spaces are stored
+      },
+    status: { 
+        type: String, 
+        enum: ['Lead', 'Registered', 'Deleted'], 
+        default: 'Lead' 
     },
-    service_provider_mobile_number: { 
-      type: String, 
-      required: true 
+    status_id: { 
+        type: String, 
+        enum: ["0", "1", "2"], 
+        default: "0" 
     },
-    active_status: { 
-      type: String, 
-      enum: ['1', '0'], 
-      default: '1' 
-    },
-    registered: { 
-      type: String, 
-      enum: ['1', '0'], 
-      required: true, 
-      default: '0' 
-    }
-  },
-  { timestamps: true }  // Automatically adds 'createdAt' and 'updatedAt' fields
+    updated_at: { type: Date, default: null }
+}, { collection: 'agent_leads' }
 );
 
-module.exports = mongoose.model("AgentLeads", agentLeadsSchema,"agent_leads");
+const AgentLead = mongoose.model('AgentLead', agentLeadSchema);
+
+module.exports = AgentLead;
