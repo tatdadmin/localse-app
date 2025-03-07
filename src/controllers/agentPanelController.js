@@ -185,23 +185,31 @@ async function getRegisteredServiceProviderByAgentNumber(req,res){
         const agentLeads = await AgentLead.find({agent_number:agentMobileNumber, status_id: { $in: ["1"] }})
                             .sort({ add_date: -1 }) 
                             .limit(data_limit > 0 ? data_limit : 0)
-                            .select("service_provider_mobile_number -_id");
+                            .lean();
         
+                            const registeredMobileNumbers = agentLeads.map(lead => lead.service_provider_mobile_number);
 
-        const mobileNumbers = agentLeads.map(lead => lead.service_provider_mobile_number);
-
-        const serviceProvidersData = await serviceProviderModel.find({
-          service_provider_mobile_number: { $in: mobileNumbers }
-        }).lean();
-    
-        const sortedServiceProviders = mobileNumbers.map(mobile => 
-          serviceProvidersData.find(provider => provider.service_provider_mobile_number === mobile)
-        ).filter(Boolean);
-
+                            // Fetch service types from ServiceProviderModel
+                            const serviceProviders = await serviceProviderModel.find({
+                                service_provider_mobile_number: { $in: registeredMobileNumbers }
+                            }, { service_provider_mobile_number: 1, service_type: 1 })
+                            .lean();
+                            
+                            // Create a mapping of mobile number -> service_type
+                            const serviceTypeMap = serviceProviders.reduce((acc, sp) => {
+                                acc[sp.service_provider_mobile_number] = sp.service_type;
+                                return acc;
+                            }, {});
+                            
+                            // Append service_type to each agent lead while keeping sorting intact
+                            const result = agentLeads.map(lead => ({
+                                ...lead,
+                                service_type: serviceTypeMap[lead.service_provider_mobile_number] || null
+                            }));
             return res.status(200).json({
                 status_code:200,
                 message:"All For Registered Service Providers Retrieved Successfully",
-                data:sortedServiceProviders
+                data:result
             })
     } catch (error) {
         console.error("Error In Getting Registered", error);
