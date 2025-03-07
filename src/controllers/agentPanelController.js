@@ -1012,14 +1012,21 @@ async function removeLeadByAgent(req,res){
         status_code:400,
         message:"Lead Data Doesnot Exist"
       })
-    }
-
+    }else{
   // Delete the lead
-    await AgentLead.deleteOne({ _id: id });
+    // await AgentLead.deleteOne({ _id: id });
+
+    agentLeadData.status="Deleted";
+    agentLeadData.status_id="2";
+    agentLeadData.updated_at=new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000);
+    await agentLeadData.save();
     return res.status(200).json({
       status_code:200,
       message:`Data with provided id ${id} deleted successfully`
     })
+    }
+
+
 
   } catch (error) {
     console.error("Error In Removing Lead By Agent", error);
