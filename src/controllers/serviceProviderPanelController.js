@@ -394,7 +394,7 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
             if(minutesDifference <0){
                 minutesDifference = minutesDifference* -1;
             }
-            console.log("new minuteDff",minutesDifference);
+            // console.log("new minuteDff",minutesDifference);
             if(minutesDifference <=30){
 
                 // now we need to calculate difference of distance addhar latlong and last latlong 
@@ -429,7 +429,6 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
 
                     });
                     await serviceProviderPanelLoginDistanceRecord.save();
-                    console.log("line 432",serviceProviderPanelLoginDistanceRecord);
                     return res.status(200).json({
                         status_code:200,
                         message: "Service provider successfully login",
@@ -468,7 +467,6 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
     // calculate distance with adharLatLong and requestBody latlongie new_latitude, new_longitude
                 const distanceWithBodyLatLongAndAdharLatLong = calculateDistance(adharLat,adharLong,new_latitude,new_longitude);
 
-                console.log("line 471 inside else block and distanceWithBodyLatLong newlat newlong",distanceWithBodyLatLongAndAdharLatLong);
                 if(distanceWithBodyLatLongAndAdharLatLong <= process.env.ALLOWED_PANEL_LOGIN_DISTANCE){
                     const newServiceProviderLatLongData = new service_provider_lat_long({
                         add_date:new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000)),
@@ -511,7 +509,6 @@ let minutesDifference = differenceInMilliseconds / (1000 * 60);
                         panel_login_distance_from_aadhaar : distanceWithBodyLatLongAndAdharLatLong
 
                     });
-                    console.log("line 514",serviceProviderPanelLoginDistanceRecord);
                     await serviceProviderPanelLoginDistanceRecord.save();
                     return res.status(200).json({
                         status_code:200,
