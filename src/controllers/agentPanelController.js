@@ -40,7 +40,7 @@ async function addLead(req,res){
         if(existingServiceProvider){
             return res.status(400).json({
                 status_code:400,
-                message:"service provider with given service_provider_mobile_number already Registered, You Cant Add as Lead"
+                message:`Service Provider Already Exists with number ${service_provider_mobile_number}`
             })
         }
         const existingLead = await AgentLead.findOne({
