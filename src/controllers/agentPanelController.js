@@ -870,7 +870,7 @@ async function serviceProviderRegistrationByAgentPanel(req,res){
               service_provider_mobile_number:agentLeadData.service_provider_mobile_number,
               service_provider_name:fullName,
               amount_received: 100,
-              commission_layer: "Agent Creation",
+              commission_layer: "Registration",
               commission_percent: 20,
               commission_value: 20,
 
