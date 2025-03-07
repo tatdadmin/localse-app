@@ -15,6 +15,7 @@ const service_provider_lat_long = require("../models/service_provider_lat_long")
 const ServiceProviderNotifications = require("../models/ServiceProviderNotifications");
 const ServiceProviderLatLong = require("../models/service_provider_lat_long");
 const AgentConversion = require("../models/AgentConversion");
+const { default: mongoose } = require("mongoose");
 
 async function addLead(req,res){
     try {
@@ -183,12 +184,24 @@ async function getRegisteredServiceProviderByAgentNumber(req,res){
 
         const agentLeads = await AgentLead.find({agent_number:agentMobileNumber, status_id: { $in: ["1"] }})
                             .sort({ add_date: -1 }) 
-                            .limit(data_limit > 0 ? data_limit : 0);
+                            .limit(data_limit > 0 ? data_limit : 0)
+                            .select("service_provider_mobile_number -_id");
         
+
+        const mobileNumbers = agentLeads.map(lead => lead.service_provider_mobile_number);
+
+        const serviceProvidersData = await serviceProviderModel.find({
+          service_provider_mobile_number: { $in: mobileNumbers }
+        }).lean();
+    
+        const sortedServiceProviders = mobileNumbers.map(mobile => 
+          serviceProvidersData.find(provider => provider.service_provider_mobile_number === mobile)
+        ).filter(Boolean);
+
             return res.status(200).json({
                 status_code:200,
                 message:"All For Registered Service Providers Retrieved Successfully",
-                data:agentLeads
+                data:sortedServiceProviders
             })
     } catch (error) {
         console.error("Error In Getting Registered", error);
@@ -215,12 +228,36 @@ async function getAllLeadsRegisteredByAgentNumber(req,res){
 
         const agentLeads = await AgentLead.find({agent_number:agentMobileNumber, status_id: { $in: ["0","1"] }})
                             .sort({ add_date: -1 }) 
-                            .limit(data_limit > 0 ? data_limit : 0);
-        
+                            .limit(data_limit > 0 ? data_limit : 0)
+                            .lean();
+
+        const registeredMobileNumbers = agentLeads
+        .filter(lead => lead.status_id === "1") // Filter for registered ones
+        .map(lead => lead.service_provider_mobile_number); // Get mobile numbers
+
+        let serviceTypeMap = {};
+
+        if (registeredMobileNumbers.length > 0) {
+            const serviceProviders = await serviceProviderModel.find({
+                service_provider_mobile_number: { $in: registeredMobileNumbers }
+            }, { service_provider_mobile_number: 1, service_type: 1 })
+            .lean();
+
+
+            serviceTypeMap = serviceProviders.reduce((acc, sp) => {
+                acc[sp.service_provider_mobile_number] = sp.service_type;
+                return acc;
+            }, {});
+        }
+
+        const result = agentLeads.map(lead => ({
+            ...lead,
+            service_type: lead.status_id === "1" ? serviceTypeMap[lead.service_provider_mobile_number] || null : null
+        }));
             return res.status(200).json({
                 status_code:200,
                 message:"All Data Retrieved Successfully",
-                data:agentLeads
+                data:result
             })
     } catch (error) {
         console.error("Error In Getting All Leads & Registered", error);
@@ -938,6 +975,52 @@ async function addServiceProviderLatLongByAgentPanel(req,res){
     }
 }
 
+async function removeLeadByAgent(req,res){
+  try {
+    const agentMobileNumber = req.user.mobile;
+    const {id}= req.body;
+    const existingAgent= await serviceProviderModel.findOne({
+        service_provider_mobile_number:agentMobileNumber
+    });
+    if(!existingAgent){
+        return res.status(400).json({
+            status_code:400,
+            message:"Agent with mobile_number doesnot exist"
+        })
+    };
+
+    if (!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(400).json({
+        status_code:400,
+        message:"Invalid Id format"
+      })
+    }
+    const agentLeadData= await AgentLead.findOne({
+      _id:id,status_id:"0",agent_number:agentMobileNumber
+    })
+
+    if(!agentLeadData){
+      return res.status(400).json({
+        status_code:400,
+        message:"Lead Data Doesnot Exist"
+      })
+    }
+
+  // Delete the lead
+    await AgentLead.deleteOne({ _id: id });
+    return res.status(200).json({
+      status_code:200,
+      message:`Data with provided id ${id} deleted successfully`
+    })
+
+  } catch (error) {
+    console.error("Error In Removing Lead By Agent", error);
+    return res
+    .status(500)
+    .json({ status_code: 500, message: "Internal server error" });
+  }
+}
+
 module.exports= {
     addLead,
     getAgentInfo,
@@ -950,5 +1033,6 @@ module.exports= {
     verifyAadhaarOTPServiceProvider,
     uploadImageToAWS,
     serviceProviderRegistrationByAgentPanel,
-    addServiceProviderLatLongByAgentPanel
+    addServiceProviderLatLongByAgentPanel,
+    removeLeadByAgent
 };
