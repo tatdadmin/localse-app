@@ -18,7 +18,7 @@ const appLoginAttemptSchema = new mongoose.Schema({
     //  default: "Service Provider"
      },
   deviceOS: { type: String, required: true },
-  app_version: { type: String, required: true }
+  app_version: { type: String, required: false }
 });
 
 module.exports = mongoose.model("AppLoginAttempt", appLoginAttemptSchema,"app_login_attempt");
